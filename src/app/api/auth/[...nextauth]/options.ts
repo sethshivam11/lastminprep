@@ -1,6 +1,5 @@
 import dbConnect from "@/lib/db";
 import { NextAuthOptions, User } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import UserModel from "@/models/user.model";
 import bcrypt from "bcrypt";
@@ -26,10 +25,10 @@ declare module "next-auth" {
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-    }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID || "",
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    // }),
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
@@ -97,7 +96,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/sign-in",
+    signIn: "/auth/sign-in",
   },
   session: {
     strategy: "jwt",

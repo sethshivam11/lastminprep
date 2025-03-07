@@ -23,6 +23,13 @@ const loginTypeSchema = z.enum(["GITHUB", "GOOGLE"], {
   message: "Invalid login type",
 });
 
-const userIdSchema = z.string().uuid();
+const passwordSchema = z
+  .string()
+  .min(6, {
+    message: "Password must be at least 6 characters",
+  })
+  .max(100, {
+    message: "Password is too long",
+  });
 
-export { emailSchema, fullNameSchema, loginTypeSchema, userIdSchema };
+export { emailSchema, fullNameSchema, loginTypeSchema, passwordSchema };
