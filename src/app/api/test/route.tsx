@@ -30,7 +30,7 @@ const google = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   await dbConnect();
 
   const session = await getServerSession(authOptions);
@@ -88,6 +88,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
           mcqCount,
           codingCount,
           questions: data,
+        }).catch((err) => {
+          console.log(err);
+          return NextResponse.json(
+            {
+              message: "Cannot save test",
+              error: err.message,
+            },
+            { status: 500 }
+          );
         });
       },
     });

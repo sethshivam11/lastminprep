@@ -9,16 +9,12 @@ import McqCard from "@/components/McqCard";
 import SubmitDialog from "@/components/SubmitDialog";
 import TimerDialog from "@/components/TimerDialog";
 
-interface Response {
-  [key: number]: string;
-}
-
 function Page() {
   const query = useSearchParams();
 
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [response, setResponse] = useState<Response>({});
+  // const [response, setResponse] = useState<Response>({});
   const [testDetails, setTestDetails] = useState({
     difficulty: "",
     coding: "",
@@ -102,7 +98,10 @@ console.log(reverseString("javascript"));
   }, [stream]);
 
   const handleChange = () => {};
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    setLoading(false);
+    setStream("");
+  };
 
   useEffect(() => {
     const language = query.get("language") || "javascript";
@@ -116,7 +115,7 @@ console.log(reverseString("javascript"));
 
   return (
     <div className="flex flex-col gap-4 sm:p-10 p-4 max-w-5xl mx-auto">
-      {/* <Guidelines /> */}
+      <Guidelines />
       <div className="flex justify-between items-center gap-2">
         <div className="space-y-4">
           <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">

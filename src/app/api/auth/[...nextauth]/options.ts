@@ -1,8 +1,8 @@
 import dbConnect from "@/lib/db";
-import { NextAuthOptions, Session } from "next-auth";
+import { NextAuthOptions, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import User, { UserI } from "@/models/user.model";
+import UserModel from "@/models/user.model";
 import bcrypt from "bcrypt";
 
 declare module "next-auth" {
@@ -12,9 +12,16 @@ declare module "next-auth" {
       isVerified: boolean;
       email: string;
       image?: string;
+      name?: string;
     };
   }
-  interface User extends UserI {}
+  interface User {
+    _id: string;
+    isVerified: boolean;
+    name: string;
+    email: string;
+    image?: string;
+  }
 }
 
 export const authOptions: NextAuthOptions = {
@@ -36,10 +43,10 @@ export const authOptions: NextAuthOptions = {
           type: "password",
         },
       },
-      async authorize(credentials: any): Promise<any> {
+      async authorize(credentials) {
         await dbConnect();
         try {
-          const user = await User.findOne({
+          const user = await UserModel.findOne({
             $or: [
               { email: credentials?.email },
               { password: credentials?.password },
@@ -61,7 +68,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid password");
           }
 
-          return user;
+          return user as unknown as User;
         } catch (error) {
           if (error instanceof Error) {
             throw new Error(error.message);

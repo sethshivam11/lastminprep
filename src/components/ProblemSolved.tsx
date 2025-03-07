@@ -16,7 +16,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useMemo, useState } from "react";
-import { Button } from "./ui/button";
 
 type ChartType = "mcq" | "coding";
 

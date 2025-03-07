@@ -3,12 +3,12 @@
 import Guidelines from "@/components/Guidelines";
 import TestSkeleton from "@/components/TestSkeleton";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import McqCard from "@/components/McqCard";
 import CodingCard from "@/components/CodingCard";
 import SubmitDialog from "@/components/SubmitDialog";
 
-function Page() {
+function TestPage() {
   const query = useSearchParams();
 
   const [loading, setLoading] = useState(false);
@@ -96,7 +96,10 @@ console.log(reverseString("javascript"));
   }, [stream]);
 
   const handleChange = () => {};
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    setStream("");
+    setLoading(false);
+  };
 
   useEffect(() => {
     const language = query.get("language") || "javascript";
@@ -151,6 +154,14 @@ console.log(reverseString("javascript"));
         handleSubmit={handleSubmit}
       />
     </div>
+  );
+}
+
+function Page() {
+  return (
+    <Suspense>
+      <TestPage />
+    </Suspense>
   );
 }
 

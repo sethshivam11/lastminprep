@@ -7,7 +7,6 @@ import {
   DialogDescription,
   DialogTitle,
   DialogFooter,
-  DialogHeader,
   DialogClose,
 } from "@/components/ui/dialog";
 import { AlarmClock } from "lucide-react";
