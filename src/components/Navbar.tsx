@@ -99,7 +99,7 @@ function Navbar() {
         </Link>
         {status === "authenticated" ? (
           <Button asChild>
-            <Link href="/new">Start Test</Link>
+            <Link href="/test/new">Start Test</Link>
           </Button>
         ) : (
           <Dialog>

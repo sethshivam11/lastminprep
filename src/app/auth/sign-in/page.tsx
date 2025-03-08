@@ -1,4 +1,5 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -51,13 +52,23 @@ const Page = () => {
     const result = await signIn("credentials", {
       email: data.email,
       password: data.password,
-      redirect: true,
+      redirect: false,
     });
 
     if (result?.error) {
-      toast.error("Login failed", {
-        description: result.error || "Incorrect username or password",
+      if (result.error === "User is not verified") {
+        toast.error("Sign In failed", {
+          description: "Please verify your email to continue",
+        });
+        router.push(`/auth/verify-email/${encodeURIComponent(data.email)}`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      toast.error("Sign In failed", {
+        description: result.error || "Incorrect email or password",
       });
+      setIsSubmitting(false);
     }
 
     if (result?.url) {
@@ -105,13 +116,13 @@ const Page = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <div className="flex w-full items-center space-x-2 rounded-lg relative overflow-hidden border border-input pr-2 group">
+                    <div className="flex w-full items-center space-x-2 rounded-lg relative overflow-hidden border border-input pr-2 group focus-within:ring-ring shadow-sm focus-within:ring-1">
                       <FormControl>
-                        <input
+                        <Input
                           autoComplete="current-password"
                           type={showPwd ? "text" : "password"}
                           placeholder="Enter your password"
-                          className="w-full bg-background p-2 outline-none text-sm"
+                          className="w-full border-0 focus-visible:ring-0"
                           {...field}
                         />
                       </FormControl>
@@ -148,7 +159,7 @@ const Page = () => {
                 <p>
                   Don&apos;t have an acount?&nbsp;
                   <Link
-                    href="/sign-up"
+                    href="/auth/sign-up"
                     type="button"
                     className="text-blue-500 hover:text-blue-600"
                   >

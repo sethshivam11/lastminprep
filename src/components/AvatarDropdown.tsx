@@ -28,20 +28,15 @@ function AvatarDropdown({ isMobile }: { isMobile?: boolean }) {
         asChild
       >
         <Avatar className={`cursor-pointer ${isMobile ? "sm:hidden" : ""}`}>
-          <AvatarImage
-            src={
-              data?.user?.image ||
-              "https://res.cloudinary.com/dv3qbj0bn/image/upload/v1723483837/sociial/settings/r5pvoicvcxtyhjkgqk8y.png"
-            }
-          />
-          <AvatarFallback>{data?.user?.name?.[0] || ""}</AvatarFallback>
+          <AvatarImage src={data?.user?.avatar || ""} />
+          <AvatarFallback>{data?.user?.fullName || ""}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {status === "authenticated" ? (
           <>
-            <div className="text-2xl font-semibold">
-              {data?.user?.name}
+            <div className="text-lg font-semibold p-1">
+              {data?.user?.fullName}
               <p className="text-muted-foreground text-sm">
                 {data?.user?.email}
               </p>
@@ -51,6 +46,21 @@ function AvatarDropdown({ isMobile }: { isMobile?: boolean }) {
                 <CircleUser /> Profile
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                {theme === "dark" ? <Moon /> : <Sun />} Theme
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onClick={() => setTheme("light")}>
+                    <Sun /> Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    <Moon /> Dark
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem onClick={() => signOut()}>
               <LogOut /> Log out
             </DropdownMenuItem>
@@ -62,22 +72,6 @@ function AvatarDropdown({ isMobile }: { isMobile?: boolean }) {
             </DropdownMenuItem>
           </>
         )}
-
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            {theme === "dark" ? <Moon /> : <Sun />} Theme
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                <Sun /> Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                <Moon /> Dark
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
   );

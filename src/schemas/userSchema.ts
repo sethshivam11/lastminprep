@@ -32,4 +32,19 @@ const passwordSchema = z
     message: "Password is too long",
   });
 
-export { emailSchema, fullNameSchema, loginTypeSchema, passwordSchema };
+const otpSchema = z
+  .string()
+  .nonempty({
+    message: "OTP is required",
+  })
+  .length(6, {
+    message: "OTP must be 6 characters",
+  });
+
+export {
+  emailSchema,
+  fullNameSchema,
+  loginTypeSchema,
+  passwordSchema,
+  otpSchema,
+};

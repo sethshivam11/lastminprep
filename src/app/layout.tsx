@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "../context/session-provider";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/context/theme-provider";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,12 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased min-h-screen`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
+            <Toaster richColors />
             <Navbar />
             {children}
           </Providers>

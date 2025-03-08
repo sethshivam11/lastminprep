@@ -10,16 +10,16 @@ declare module "next-auth" {
       _id: string;
       isVerified: boolean;
       email: string;
-      image?: string;
-      name?: string;
+      avatar: string;
+      fullName: string
     };
   }
-  interface User {
+  interface User  {
     _id: string;
     isVerified: boolean;
-    name: string;
     email: string;
-    image?: string;
+    avatar: string;
+    fullName: string
   }
 }
 
@@ -46,13 +46,10 @@ export const authOptions: NextAuthOptions = {
         await dbConnect();
         try {
           const user = await UserModel.findOne({
-            $or: [
-              { email: credentials?.email },
-              { password: credentials?.password },
-            ],
+            email: credentials?.email,
           });
           if (!user) {
-            throw new Error("Invalid credentials");
+            throw new Error("Invalid email");
           }
 
           if (!user.isVerified) {
@@ -72,8 +69,8 @@ export const authOptions: NextAuthOptions = {
           if (error instanceof Error) {
             throw new Error(error.message);
           }
+          throw new Error("An error occurred");
         }
-        return null;
       },
     }),
   ],
@@ -83,6 +80,8 @@ export const authOptions: NextAuthOptions = {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
         token.email = user.email;
+        token.avatar = user.avatar;
+        token.fullName = user.fullName;
       }
       return token;
     },
@@ -91,6 +90,8 @@ export const authOptions: NextAuthOptions = {
         session.user._id = token._id?.toString() || "";
         session.user.isVerified = token.isVerified as boolean;
         session.user.email = token.email || "";
+        session.user.avatar = token.avatar as string;
+        session.user.fullName = token.fullName as string;
       }
       return session;
     },

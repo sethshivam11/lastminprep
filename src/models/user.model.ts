@@ -6,7 +6,7 @@ export interface UserI extends Document {
   email: string;
   password: string;
   isVerified: boolean;
-  verifyCode: number;
+  verifyCode: string;
   codeExpiry: Date;
   profile: ObjectId;
   createdAt: Date;
@@ -19,7 +19,8 @@ const UserSchema: Schema<UserI> = new Schema({
   },
   avatar: {
     type: String,
-    default: "",
+    default:
+      "https://res.cloudinary.com/dv3qbj0bn/image/upload/v1741416419/lastminprep/qnzy9jiix6hyfrr4cddx.png",
   },
   email: {
     type: String,
@@ -35,7 +36,8 @@ const UserSchema: Schema<UserI> = new Schema({
     default: false,
   },
   verifyCode: {
-    type: Number,
+    type: String,
+    default: "",
   },
   codeExpiry: {
     type: Date,
