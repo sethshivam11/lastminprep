@@ -9,6 +9,7 @@ export interface UserI extends Document {
   verifyCode: string;
   codeExpiry: Date;
   profile: ObjectId;
+  loginType: "email" | "google" | "github";
   createdAt: Date;
 }
 
@@ -45,6 +46,10 @@ const UserSchema: Schema<UserI> = new Schema({
   profile: {
     type: Schema.Types.ObjectId,
     ref: "profile",
+  },
+  loginType: {
+    type: String,
+    default: "email",
   },
   createdAt: {
     type: Date,

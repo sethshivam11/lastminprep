@@ -112,7 +112,7 @@ console.log(reverseString("javascript"));
   }
 
   return (
-    <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-5xl mx-auto">
+    <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-5xl mx-auto min-h-screen">
       <Guidelines />
       <div className="space-y-4">
         <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">

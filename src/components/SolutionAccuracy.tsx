@@ -49,20 +49,23 @@ export function SolutionAccuracy() {
         <CardDescription>Measure correctness of your attempts</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-full">
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square max-h-full"
+        >
           <RadialBarChart
             data={chartData}
             startAngle={90}
             endAngle={-(chartData[0].correct / chartData[0].questions) * 270}
-            innerRadius={100}
-            outerRadius={180}
+            innerRadius={80}
+            outerRadius={160}
           >
             <PolarGrid
               gridType="circle"
               radialLines={false}
               stroke="none"
               className="first:fill-muted last:fill-background"
-              polarRadius={[110, 90]}
+              polarRadius={[90, 70]}
             />
             <ChartTooltip
               cursor={false}

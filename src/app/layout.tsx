@@ -5,6 +5,7 @@ import { Providers } from "../context/session-provider";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "sonner";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
   title: "Last Min Prep",
   description:
     "Generate AI-powered questions on the go. Customize your interview prep with job descriptions, language preferences, difficulty levels, and a mix of coding and multiple choice questions.",
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -30,6 +32,7 @@ export default function RootLayout({
             <Toaster richColors />
             <Navbar />
             {children}
+            <Footer />
           </Providers>
         </ThemeProvider>
       </body>

@@ -91,7 +91,7 @@ const Page = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center max-w-7xl mx-auto min-h-screen">
       <Card className="w-[500px] mx-auto bg-gradient-to-br from-primary/10 via-primary/0 to-primary/0">
         <CardHeader>
           <CardTitle className="text-center text-3xl tracking-tight font-bold">
@@ -210,8 +210,13 @@ const Page = () => {
                     "Sign In"
                   )}
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Try Another way
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                  asChild
+                >
+                  <Link href="/auth/options">Try Another way</Link>
                 </Button>
                 <p className="pt-2">
                   Already have an acount?&nbsp;

@@ -3,7 +3,7 @@ import React from "react";
 
 function Page() {
   return (
-    <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-8xl mx-auto">
+    <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-7xl mx-auto min-h-screen">
       <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">Tests</h1>
       <TestTable />
     </div>

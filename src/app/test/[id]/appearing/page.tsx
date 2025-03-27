@@ -114,7 +114,7 @@ console.log(reverseString("javascript"));
   }
 
   return (
-    <div className="flex flex-col gap-4 sm:p-10 p-4 max-w-5xl mx-auto">
+    <div className="flex flex-col gap-4 sm:p-10 p-4 max-w-5xl mx-auto min-h-screen">
       <Guidelines />
       <div className="flex justify-between items-center gap-2">
         <div className="space-y-4">

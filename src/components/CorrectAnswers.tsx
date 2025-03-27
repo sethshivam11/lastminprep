@@ -52,15 +52,15 @@ export function CorrectAnswers() {
             data={chartData}
             startAngle={90}
             endAngle={-(chartData[0].questions / chartData[0].total) * 270}
-            innerRadius={100}
-            outerRadius={180}
+            innerRadius={80}
+            outerRadius={160}
           >
             <PolarGrid
               gridType="circle"
               radialLines={false}
               stroke="none"
               className="first:fill-muted last:fill-background"
-              polarRadius={[110, 90]}
+              polarRadius={[90, 70]}
             />
             <RadialBar dataKey="questions" background />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>

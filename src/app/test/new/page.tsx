@@ -62,7 +62,7 @@ function Page() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="sm:p-10 p-4 space-y-6 max-w-4xl mx-auto"
+        className="sm:p-10 p-4 space-y-6 max-w-4xl mx-auto min-h-screen"
       >
         <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
           Start Test

@@ -18,7 +18,7 @@ function Page() {
   };
 
   return (
-    <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-8xl mx-auto">
+    <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-7xl mx-auto min-h-screen">
       <TestDetails test={test} />
       <div className="grid md:grid-cols-2 gap-4">
         <ScoreTrends />
