@@ -43,7 +43,7 @@ const TestSchema: Schema<TestI> = new Schema({
   extraDescription: String,
 });
 
-const Test = (mongoose.models.test ||
+const TestModel = (mongoose.models.test ||
   mongoose.model<TestI>("test", TestSchema)) as mongoose.Model<TestI>;
 
-export default Test;
+export default TestModel;
