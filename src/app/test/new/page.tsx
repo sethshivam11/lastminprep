@@ -35,10 +35,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import axios, { AxiosError } from "axios";
+import { toast } from "sonner";
 
 function Page() {
-  const router = useRouter();
   const formSchema = z.object({
     difficulty: difficultySchema,
     coding: codingCountSchema,
@@ -52,10 +52,20 @@ function Page() {
     resolver: zodResolver(formSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    router.push(
-      `/test/appearing?query=${encodeURIComponent(JSON.stringify(values))}`
-    );
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await axios.post("/api/test", values);
+      if (!response.data.success) {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      let message = "Something went wrong";
+      if (error instanceof AxiosError) {
+        message = error.response?.data.message;
+      }
+      toast.error(message);
+      console.log(error);
+    }
   }
 
   return (
@@ -85,7 +95,10 @@ function Page() {
                     <SelectGroup>
                       {languages.map((language, index) => (
                         <SelectItem key={index} value={language}>
-                          {language.charAt(0).toUpperCase() + language.slice(1)}
+                          {language === "cpp"
+                            ? "C++"
+                            : language.charAt(0).toUpperCase() +
+                              language.slice(1)}
                         </SelectItem>
                       ))}
                     </SelectGroup>

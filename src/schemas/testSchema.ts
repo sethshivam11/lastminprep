@@ -33,7 +33,7 @@ const extraDescSchema = z
   })
   .optional();
 
-const mcqCountSchema = z.enum(["10", "20", "30"], {
+const mcqCountSchema = z.enum(["5", "10", "15", "20"], {
   message: "Invalid mcq count",
 });
 

@@ -2,16 +2,26 @@ import EditProfile from "@/components/EditProfile";
 import GithubIcon from "@/components/icons/Github";
 import LinkedinIcon from "@/components/icons/Linkedin";
 import XIcon from "@/components/icons/X";
+import { InterviewActivity } from "@/components/InterviewActivity";
+import { PerformanceTrend } from "@/components/PerformanceTrend";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Country } from "country-state-city";
-import { LinkIcon, MapPin } from "lucide-react";
+import {
+  Award,
+  Brain,
+  CheckCircle,
+  LinkIcon,
+  MapPin,
+  TrendingUp,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -33,18 +43,73 @@ function Page() {
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     skills: ["HTML", "CSS", "JavaScript", "React", "Node.js"],
   };
+  const analytics = [
+    {
+      title: "Total Interviews",
+      value: 87,
+      icon: <CheckCircle />,
+      color: "text-green-500",
+    },
+    {
+      title: "Average Score",
+      value: 75,
+      icon: <Award />,
+      isPercentage: true,
+      color: "text-yellow-500",
+    },
+    {
+      title: "Completion Rate",
+      value: 120,
+      icon: <Brain />,
+      isPercentage: true,
+      color: "text-blue-500",
+    },
+    {
+      title: "Total Questions",
+      value: 90,
+      icon: <TrendingUp />,
+      color: "text-red-500",
+    },
+  ];
+  const sessions = [
+    {
+      title: "JavaScript Interview",
+      createdAt: "2023-10-01",
+      score: 86,
+    },
+    {
+      title: "React Interview",
+      createdAt: "2023-09-28",
+      score: 75,
+    },
+    {
+      title: "Node.js Interview",
+      createdAt: "2023-09-25",
+      score: 90,
+    },
+    {
+      title: "CSS Interview",
+      createdAt: "2023-09-20",
+      score: 80,
+    },
+    {
+      title: "HTML Interview",
+      createdAt: "2023-09-15",
+      score: 70,
+    },
+  ];
 
   return (
     <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-7xl mx-auto min-h-screen">
-      <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-2">
-        <Card className="flex flex-col items-center justify-center p-4 border-input rounded-lg">
-          <CardHeader className="pt-0">
+      <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
+        <Card className="flex flex-col items-center p-4 pt-0 border-input rounded-lg">
+          <CardHeader>
             <Image
               src={user.avatar}
               alt={user.fullName + "'s image"}
               width="200"
               height="200"
-              className="w-full"
+              className="w-full select-none"
               draggable={false}
             />
             <CardTitle className="lg:text-4xl sm:text-3xl text-2xl tracking-tight font-bold">
@@ -118,6 +183,64 @@ function Page() {
             </div>
           </CardFooter>
         </Card>
+        <div className="flex flex-col gap-4 lg:col-span-3 md:col-span-2">
+          <div className="grid lg:grid-cols-4 grid-cols-2 gap-2">
+            {analytics.map(
+              ({ title, value, icon, isPercentage, color }, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center justify-center p-4 border rounded-lg"
+                >
+                  <div className="flex items-center justify-between gap-1 text-muted-foreground text-left w-full">
+                    <p className="max-sm:text-sm">{title}</p>
+                    <span className={color}>{icon}</span>
+                  </div>
+                  <h1 className="text-2xl font-bold tracking-tight w-full mt-4">
+                    {value}
+                    {isPercentage && "%"}
+                  </h1>
+                </div>
+              )
+            )}
+          </div>
+          <div className="grid lg:grid-cols-2 gap-2">
+            <InterviewActivity />
+            <PerformanceTrend />
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Recent Sessions</CardTitle>
+              <CardDescription>
+                Your last {sessions.length} interview practice sessions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                {sessions.map(({ title, score, createdAt }, index) => (
+                  <div
+                    className="flex items-center justify-between"
+                    key={index}
+                  >
+                    <div className="flex flex-col justify-center">
+                      <h1 className="font-semibold tracking-tight">{title}</h1>
+                      <p className="text-muted-foreground text-sm">
+                        {new Date(createdAt).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
+                    <Badge className="rounded-xl">
+                      {score}
+                      {score && "%"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
