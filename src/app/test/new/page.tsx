@@ -35,37 +35,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createTest } from "@/services/tests";
 
 function Page() {
   const formSchema = z.object({
     difficulty: difficultySchema,
-    coding: codingCountSchema,
-    mcq: mcqCountSchema,
+    codingCount: codingCountSchema,
+    mcqCount: mcqCountSchema,
     language: languageSchema,
     extraDesc: extraDescSchema,
     jobDesc: jobDescSchema,
   });
 
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const response = await axios.post("/api/test", values);
-      if (!response.data.success) {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      let message = "Something went wrong";
-      if (error instanceof AxiosError) {
-        message = error.response?.data.message;
-      }
-      toast.error(message);
-      console.log(error);
+    const response = await createTest(values);
+    if (response.success) {
+      localStorage.setItem(`test-${response.data._id}`, JSON.stringify(response.data));
+      router.push(`/test/${response.data._id}/appearing`);
+      return;
     }
+    toast.error(response.message);
   }
 
   return (
@@ -141,7 +137,7 @@ function Page() {
         <div className="grid sm:grid-cols-2 sm:gap-2 gap-6">
           <FormField
             control={form.control}
-            name="mcq"
+            name="mcqCount"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>MCQs</FormLabel>
@@ -170,7 +166,7 @@ function Page() {
           />
           <FormField
             control={form.control}
-            name="coding"
+            name="codingCount"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Coding Questions</FormLabel>

@@ -1,26 +1,9 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-export interface MCQ extends Document {
-  question: string;
-  options: string[];
-  answer: string;
-  createdAt: Date;
-}
-
-export interface Coding extends Document {
-  question: string;
-  inputFormat: string;
-  outputFormat: string;
-  constraints: string;
-  exampleInput: string;
-  exampleOutput: string;
-}
-
 export interface TestI extends Document {
   name: string;
   user: ObjectId;
-  mcqQuestions: MCQ[];
-  codingQuestions: Coding[];
+  questions: string;
   difficulty: "easy" | "intermediate" | "hard";
   language: string;
   mcqCount: number;
@@ -30,34 +13,6 @@ export interface TestI extends Document {
   attempts: ObjectId[];
 }
 
-const MCQSchema: Schema<MCQ> = new Schema({
-  question: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: [String],
-    required: true,
-  },
-  answer: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-const CodingSchema: Schema<Coding> = new Schema({
-  question: String,
-  inputFormat: String,
-  outputFormat: String,
-  constraints: String,
-  exampleInput: String,
-  exampleOutput: String,
-});
-
 const TestSchema: Schema<TestI> = new Schema({
   name: String,
   user: {
@@ -65,8 +20,10 @@ const TestSchema: Schema<TestI> = new Schema({
     ref: "user",
     required: true,
   },
-  mcqQuestions: [MCQSchema],
-  codingQuestions: [CodingSchema],
+  questions: {
+    type: String,
+    default: "",
+  },
   language: {
     type: String,
     required: true,

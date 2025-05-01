@@ -93,6 +93,16 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
+        if (!token._id) {
+          await dbConnect();
+          const existingUser = await UserModel.findOne({ email: token.email });
+          if (existingUser) {
+            token._id = (existingUser._id as string).toString();
+            token.isVerified = existingUser.isVerified;
+            token.avatar = existingUser.avatar;
+            token.fullName = existingUser.fullName;
+          }
+        }
         session.user._id = token._id?.toString() || "";
         session.user.isVerified = token.isVerified as boolean;
         session.user.email = token.email || "";
@@ -108,12 +118,13 @@ export const authOptions: NextAuthOptions = {
         await dbConnect();
         let user = await UserModel.findOne({ email: profile.email });
 
+        console.log(profile);
         if (!user) {
           user = await UserModel.create({
             email: profile.email,
             fullName: profile.name,
             password: "google",
-            avatar: profile.image,
+            avatar: "picture" in profile ? profile.picture : profile.image,
             isVerified: true,
             loginType: "google",
           });

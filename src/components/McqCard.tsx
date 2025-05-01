@@ -10,15 +10,10 @@ import CodeBlock from "./CodeBlock";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import { MCQQuestion } from "@/lib/helpers";
 
 interface Props {
-  mcq: {
-    question: string;
-    codeblock: string;
-    options: string[];
-    answer: string;
-    response: string;
-  };
+  mcq: MCQQuestion;
   language: string;
   handleChange: (value: string) => void;
 }
@@ -29,7 +24,7 @@ function McqCard({ mcq, language }: Props) {
       <CardHeader>
         <CardTitle className="text-lg">{mcq.question}</CardTitle>
         <CardDescription>
-          {language && (
+          {language && mcq.codeblock && (
             <CodeBlock language={language} code={mcq.codeblock?.trim()} />
           )}
         </CardDescription>

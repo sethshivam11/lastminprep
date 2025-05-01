@@ -9,18 +9,10 @@ import {
 import CodeBlock from "./CodeBlock";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
+import { CodingQuestion } from "@/lib/helpers";
 
 interface Props {
-  coding: {
-    question: string;
-    inputFormat: string;
-    outputFormat: string;
-    constraints: string;
-    exampleInput: string;
-    exampleOutput: string;
-    codeblock: string;
-    response: string;
-  };
+  coding: CodingQuestion;
   language: string;
   handleChange: (value: string) => void;
 }
@@ -31,7 +23,7 @@ function CodingCard({ coding, language }: Props) {
       <CardHeader>
         <CardTitle className="text-xl">{coding.question}</CardTitle>
         <CardDescription>
-          {language && (
+          {language && coding.codeblock && (
             <CodeBlock language={language} code={coding.codeblock?.trim()} />
           )}
         </CardDescription>

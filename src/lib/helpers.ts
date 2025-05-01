@@ -6,20 +6,21 @@ export const mcqOptions = ["5", "10", "15", "20"];
 
 export const codingOptions = ["0", "1", "2", "3", "4", "5"];
 
-type MCQQuestion = {
+export type MCQQuestion = {
   question: string;
   options: string[];
   answer: string;
   codeblock?: string;
 };
 
-type CodingQuestion = {
+export type CodingQuestion = {
   question: string;
   inputFormat?: string;
   outputFormat?: string;
   constraints?: string;
   exampleInput?: string;
   exampleOutput?: string;
+  codeblock?: string;
 };
 
 type ParsedTest = {
@@ -28,10 +29,9 @@ type ParsedTest = {
   codingQuestions: CodingQuestion[];
 };
 
-
 export function parseTestData(input: string): ParsedTest {
   const lines = input.split('\n');
-  const name = lines[0].trim();
+  const name = lines[0].replace(/^###|###$/g, '').trim();
 
   const mcqQuestions: MCQQuestion[] = [];
   const codingQuestions: CodingQuestion[] = [];
@@ -51,7 +51,6 @@ export function parseTestData(input: string): ParsedTest {
         codingQuestions.push(current as CodingQuestion);
       }
       current = {};
-      currentSection = '';
       codeblock = false;
       codeLines = [];
       continue;
@@ -62,10 +61,18 @@ export function parseTestData(input: string): ParsedTest {
       continue;
     }
 
-    if (line === '!!!') {
-      codeblock = !codeblock;
-      if (!codeblock && currentSection === 'MCQ') {
-        current.codeblock = codeLines.join('\n');
+    if (line.includes('!!!')) {
+      const split = line.split('!!!');
+      // Handle single-line codeblocks like: Codeblock: !!! code here !!!
+      if (split.length === 3) {
+        const code = split[1].trim();
+        current.codeblock = code;
+      } else {
+        codeblock = !codeblock;
+        if (!codeblock && codeLines.length > 0) {
+          current.codeblock = codeLines.join('\n');
+          codeLines = [];
+        }
       }
       continue;
     }
@@ -109,4 +116,24 @@ export function parseTestData(input: string): ParsedTest {
   }
 
   return { name, mcqQuestions, codingQuestions };
+}
+
+
+export async function generateTest(testId: string, onMessage: (chunk: string) => void) {
+  const res = await fetch(`/api/test/${testId}/questions`, {
+    method: 'POST',
+  });
+
+  if (!res.body) throw new Error("No response body");
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let done = false;
+
+  while (!done) {
+    const { value, done: doneReading } = await reader.read();
+    done = doneReading;
+    const chunk = decoder.decode(value);
+    onMessage(chunk);
+  }
 }

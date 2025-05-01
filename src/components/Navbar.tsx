@@ -108,9 +108,11 @@ function Navbar() {
             Dashboard
           </Link>
           {status === "authenticated" ? (
-            <Button asChild>
-              <Link href="/test/new">Start Test</Link>
-            </Button>
+            location === "/test/new" ? null : (
+              <Button asChild>
+                <Link href="/test/new">Start Test</Link>
+              </Button>
+            )
           ) : (
             <Dialog>
               <DialogTrigger asChild>
