@@ -16,7 +16,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 
-function AvatarDropdown({ isMobile }: { isMobile?: boolean }) {
+function AvatarDropdown() {
   const { theme, setTheme } = useTheme();
   const { data, status } = useSession();
   const location = usePathname();
@@ -31,7 +31,7 @@ function AvatarDropdown({ isMobile }: { isMobile?: boolean }) {
         className={location.includes("appearing") ? "hidden" : ""}
         asChild
       >
-        <Avatar className={`cursor-pointer ${isMobile ? "sm:hidden" : ""}`}>
+        <Avatar className="cursor-pointer">
           <AvatarImage src={data?.user?.avatar || ""} />
           <AvatarFallback>
             {data?.user?.fullName?.slice(0, 1) || ""}
@@ -41,9 +41,7 @@ function AvatarDropdown({ isMobile }: { isMobile?: boolean }) {
       <DropdownMenuContent align="end">
         <div className="text-lg font-semibold p-1">
           {data?.user?.fullName}
-          <p className="text-muted-foreground text-sm">
-            {data?.user?.email}
-          </p>
+          <p className="text-muted-foreground text-sm">{data?.user?.email}</p>
         </div>
         <DropdownMenuItem asChild>
           <Link href="/profile">

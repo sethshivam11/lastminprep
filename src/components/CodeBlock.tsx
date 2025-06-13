@@ -8,6 +8,8 @@ import "prismjs/components/prism-java";
 import "prismjs/components/prism-python";
 
 function CodeBlock({ code, language }: { code: string; language: string }) {
+  const decodedCode = code.replace(/\\n/g, "\n").replace(/\\"/g, '"');
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       Prism.highlightAll();
@@ -17,7 +19,7 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
     <div className="code-block">
       <pre suppressHydrationWarning>
         <code className={`language-${language}`} suppressHydrationWarning>
-          {code}
+          {decodedCode}
         </code>
       </pre>
     </div>

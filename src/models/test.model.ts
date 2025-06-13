@@ -3,7 +3,10 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 export interface TestI extends Document {
   name: string;
   user: ObjectId;
-  questions: string;
+  questions: {
+    mcqs: MCQI[];
+    coding: CodingI[];
+  };
   difficulty: "easy" | "intermediate" | "hard";
   language: string;
   mcqCount: number;
@@ -13,6 +16,40 @@ export interface TestI extends Document {
   attempts: ObjectId[];
 }
 
+export interface MCQI extends Document {
+  question: string;
+  code: string;
+  options: string[];
+  answer: string;
+}
+
+export interface CodingI extends Document {
+  question: string;
+  expectedInputFormat: string;
+  expectedOutputFormat: string;
+  constraints: string;
+  exampleInput: string;
+  exampleOutput: string;
+  code: string;
+}
+
+const MCQSchema: Schema<MCQI> = new Schema({
+  question: { type: String, required: true },
+  code: { type: String, default: "" },
+  options: { type: [String], required: true },
+  answer: { type: String, required: true },
+});
+
+const CodingSchema: Schema<CodingI> = new Schema({
+  question: { type: String, required: true },
+  expectedInputFormat: { type: String },
+  expectedOutputFormat: { type: String },
+  constraints: { type: String, default: "" },
+  exampleInput: { type: String },
+  exampleOutput: { type: String },
+  code: { type: String, default: "" },
+});
+
 const TestSchema: Schema<TestI> = new Schema({
   name: String,
   user: {
@@ -21,8 +58,8 @@ const TestSchema: Schema<TestI> = new Schema({
     required: true,
   },
   questions: {
-    type: String,
-    default: "",
+    mcqs: [MCQSchema],
+    coding: [CodingSchema],
   },
   language: {
     type: String,

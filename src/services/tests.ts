@@ -25,3 +25,27 @@ export const createTest = async (values: {
   }
 };
 
+export const getTest = async (id: string) => {
+  if (!id) {
+    return {
+      success: false,
+      data: null,
+      message: "Test ID is required",
+    };
+  }
+  try {
+    const { data } = await axios.get(`/api/test/${id}`);
+    return data;
+  } catch (error) {
+    console.log(error);
+    let message = "Something went wrong";
+    if (error instanceof AxiosError) {
+      message = error.response?.data.message;
+    }
+    return {
+      success: false,
+      data: null,
+      message,
+    };
+  }
+};

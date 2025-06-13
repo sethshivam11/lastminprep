@@ -1,8 +1,6 @@
 import React from "react";
 import CodeBlock from "@/components/CodeBlock";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import Actions from "./Actions";
 
 function Hero() {
   return (
@@ -19,17 +17,7 @@ function Hero() {
                 questions and get instant feedback on your solutions.{" "}
               </p>
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button size="lg" asChild>
-                <Link href="/auth/options">
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link href="/auth/options">Already a Member</Link>
-              </Button>
-            </div>
+            <Actions />
           </div>
           <div className="flex items-center justify-center">
             <div className="w-full rounded-lg overflow-hidden bg-muted p-3 font-mono text-sm">

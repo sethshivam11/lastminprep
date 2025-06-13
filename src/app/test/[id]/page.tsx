@@ -5,7 +5,6 @@ import TestDetails from "@/components/TestDetails";
 import { Test } from "@/components/TestTable";
 
 function Page() {
-  // { params }: { params: { id: string } }
   const test: Test = {
     id: "4",
     name: "Data Analyst",

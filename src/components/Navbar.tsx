@@ -45,7 +45,8 @@ function Navbar() {
               size="icon"
               className={`sm:hidden ${
                 location.includes("/appearing") ? "hidden" : ""
-              }`}
+              }
+              ${status !== "authenticated" ? "invisible" : ""}`}
             >
               <Menu />
             </Button>
@@ -88,7 +89,7 @@ function Navbar() {
           </DrawerContent>
         </Drawer>
         <Link
-          href={location.includes("appearing") ? "/" : "#"}
+          href={location.includes("/appearing") ? "/" : "#"}
           className={`font-extrabold text-lg tracking-tight flex gap-2 items-center justify-center ${
             location.includes("appearing") ? "max-sm:w-full" : ""
           }`}
@@ -97,26 +98,33 @@ function Navbar() {
           LastMinPrep
         </Link>
         <div
-          className={`sm:flex hidden gap-5 items-center justify-between ${
+          className={`flex gap-5 items-center justify-between ${
             location.includes("/appearing") ? "sm:hidden" : ""
           }`}
         >
-          <Link href="/tests" className="px-4 py-1.5 h-full">
-            Tests
-          </Link>
-          <Link href="/dashboard" className="px-4 py-1.5 h-full">
-            Dashboard
-          </Link>
           {status === "authenticated" ? (
-            location === "/test/new" ? null : (
-              <Button asChild>
-                <Link href="/test/new">Start Test</Link>
-              </Button>
-            )
+            <>
+              <Link href="/tests" className="px-4 py-1.5 h-full max-sm:hidden">
+                Tests
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-4 py-1.5 h-full max-sm:hidden"
+              >
+                Dashboard
+              </Link>
+              {location === "/test/new" ? null : (
+                <Button asChild>
+                  <Link href="/test/new" className="max-sm:hidden">
+                    Start Test
+                  </Link>
+                </Button>
+              )}
+            </>
           ) : (
             <Dialog>
               <DialogTrigger asChild>
-                <Button>Start Test</Button>
+                <Button className="max-sm:hidden">Start Test</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -137,7 +145,6 @@ function Navbar() {
           )}
           <AvatarDropdown />
         </div>
-        <AvatarDropdown isMobile />
       </div>
     </div>
   );

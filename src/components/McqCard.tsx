@@ -15,27 +15,28 @@ import { MCQQuestion } from "@/lib/helpers";
 interface Props {
   mcq: MCQQuestion;
   language: string;
+  index: number;
   handleChange: (value: string) => void;
 }
 
-function McqCard({ mcq, language }: Props) {
+function McqCard({ mcq, language, index }: Props) {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">{mcq.question}</CardTitle>
         <CardDescription>
-          {language && mcq.codeblock && (
-            <CodeBlock language={language} code={mcq.codeblock?.trim()} />
+          {language && mcq.code && (
+            <CodeBlock language={language} code={mcq.code?.trim()} />
           )}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center">
           <RadioGroup className="flex flex-col gap-5">
-            {mcq.options?.map((option, index) => (
-              <div key={index} className="flex space-x-2">
-                <RadioGroupItem value={option} id={`q-${index}`} />
-                <Label htmlFor={`q-${index}`}>{option}</Label>
+            {mcq.options?.map((option, idx) => (
+              <div key={`q-${index}-${idx}`} className="flex space-x-2">
+                <RadioGroupItem value={option} id={`q-${index}-${idx}`} />
+                <Label htmlFor={`q-${index}-${idx}`}>{option}</Label>
               </div>
             ))}
           </RadioGroup>

@@ -12,9 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
+import AvatarDropdown from "./AvatarDropdown";
+import { useSession } from "next-auth/react";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { status } = useSession();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -61,7 +64,7 @@ function Header() {
         </nav>
 
         <div className="flex items-center justify-end space-x-4">
-          <ModeToggle />
+          {status !== "authenticated" ? <ModeToggle /> : <AvatarDropdown />}
 
           {/* Mobile Menu Button */}
           <button

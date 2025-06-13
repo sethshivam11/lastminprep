@@ -53,7 +53,10 @@ export async function POST(req: NextRequest) {
       jobDescription: jobDesc,
       extraDescription: extraDesc,
       mcqCount,
-      questions: [],
+      questions: {
+        mcqs: [],
+        coding: [],
+      },
       codingCount,
     });
     if (!test) {

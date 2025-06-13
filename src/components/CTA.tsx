@@ -1,7 +1,5 @@
 import React from "react";
-import { Button } from "./ui/button";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Actions from "./Actions";
 
 function CTA() {
   return (
@@ -17,17 +15,7 @@ function CTA() {
               skills with LastMinPrep
             </p>
           </div>
-          <div className="flex flex-col gap-2 min-[400px]:flex-row">
-            <Button size="lg" asChild>
-              <Link href="/auth/options">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/auth/options">Already a Member</Link>
-            </Button>
-          </div>
+          <Actions />
         </div>
       </div>
     </section>

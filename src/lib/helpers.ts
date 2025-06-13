@@ -11,6 +11,7 @@ export type MCQQuestion = {
   options: string[];
   answer: string;
   codeblock?: string;
+  code?: string;
 };
 
 export type CodingQuestion = {
@@ -20,108 +21,93 @@ export type CodingQuestion = {
   constraints?: string;
   exampleInput?: string;
   exampleOutput?: string;
-  codeblock?: string;
+  code?: string;
 };
 
 type ParsedTest = {
   name: string;
-  mcqQuestions: MCQQuestion[];
-  codingQuestions: CodingQuestion[];
+  mcqs: MCQQuestion[];
+  coding: CodingQuestion[];
 };
 
-export function parseTestData(input: string): ParsedTest {
-  const lines = input.split('\n');
-  const name = lines[0].replace(/^###|###$/g, '').trim();
+export function parseTestData(
+  input: string,
+  isJSON: boolean = false
+): ParsedTest {
+  if (!input) return { name: "", mcqs: [], coding: [] };
 
-  const mcqQuestions: MCQQuestion[] = [];
-  const codingQuestions: CodingQuestion[] = [];
+  if (isJSON) {
+    const output = JSON.parse(input);
 
-  let currentSection = '';
-  let current: Partial<MCQQuestion & CodingQuestion> = {};
-  let codeblock = false;
-  let codeLines: string[] = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-
-    if (line === '---') {
-      if (currentSection === 'MCQ' && current.question) {
-        mcqQuestions.push(current as MCQQuestion);
-      } else if (currentSection === 'CODING' && current.question) {
-        codingQuestions.push(current as CodingQuestion);
-      }
-      current = {};
-      codeblock = false;
-      codeLines = [];
-      continue;
-    }
-
-    if (line.startsWith('###')) {
-      currentSection = line.replace(/###/g, '').trim();
-      continue;
-    }
-
-    if (line.includes('!!!')) {
-      const split = line.split('!!!');
-      // Handle single-line codeblocks like: Codeblock: !!! code here !!!
-      if (split.length === 3) {
-        const code = split[1].trim();
-        current.codeblock = code;
-      } else {
-        codeblock = !codeblock;
-        if (!codeblock && codeLines.length > 0) {
-          current.codeblock = codeLines.join('\n');
-          codeLines = [];
-        }
-      }
-      continue;
-    }
-
-    if (codeblock) {
-      codeLines.push(line);
-      continue;
-    }
-
-    if (currentSection === 'MCQ') {
-      if (line.startsWith('Question:')) {
-        current.question = line.replace('Question:', '').trim();
-      } else if (line.startsWith('Options:')) {
-        current.options = line.replace('Options:', '').split(',').map(opt => opt.trim());
-      } else if (line.startsWith('Answer:')) {
-        current.answer = line.replace('Answer:', '').trim();
-      }
-    }
-
-    if (currentSection === 'CODING') {
-      if (line.startsWith('Question:')) {
-        current.question = line.replace('Question:', '').trim();
-      } else if (line.startsWith('Expected Input Format:')) {
-        current.inputFormat = line.replace('Expected Input Format:', '').trim();
-      } else if (line.startsWith('Expected Output Format:')) {
-        current.outputFormat = line.replace('Expected Output Format:', '').trim();
-      } else if (line.startsWith('Constraints:')) {
-        current.constraints = line.replace('Constraints:', '').trim();
-      } else if (line.startsWith('Example Input:')) {
-        current.exampleInput = line.replace('Example Input:', '').trim();
-      } else if (line.startsWith('Example Output:')) {
-        current.exampleOutput = line.replace('Example Output:', '').trim();
-      }
-    }
+    return {
+      name: output.name,
+      mcqs: output.questions.mcqs,
+      coding: output.questions.coding,
+    };
   }
 
-  if (currentSection === 'MCQ' && current.question) {
-    mcqQuestions.push(current as MCQQuestion);
-  } else if (currentSection === 'CODING' && current.question) {
-    codingQuestions.push(current as CodingQuestion);
+  const mcqs: MCQQuestion[] = [];
+  const coding: CodingQuestion[] = [];
+
+  const nameMatch = input.match(/"name"\s*:\s*"([^"]*)"/);
+  const name = nameMatch ? nameMatch[1] : "";
+
+  // Match MCQs with "code" that can be empty or multiline
+  const mcqRegex =
+    /{\s*"question"\s*:\s*"([^"]+?)",\s*"code"\s*:\s*"((?:[^"\\]|\\.)*?)",\s*"options"\s*:\s*\[((?:\s*"[^"]*"\s*,?\s*)+)\],\s*"answer"\s*:\s*"([^"]+?)"\s*}/g;
+
+  let match;
+  while ((match = mcqRegex.exec(input))) {
+    const question = match[1];
+    const code = match[2].replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const optionsRaw = match[3];
+    const options = optionsRaw
+      .split(",")
+      .map((opt) => opt.trim().replace(/^"|"$/g, ""));
+    const answer = match[4];
+
+    mcqs.push({ question, code, options, answer });
   }
 
-  return { name, mcqQuestions, codingQuestions };
+  // Match coding questions with starterCode (renamed from code)
+  const codingRegex =
+    /{\s*"question"\s*:\s*"([^"]+?)",[^}]*?"exampleInput"\s*:\s*"([^"]*?)",\s*"exampleOutput"\s*:\s*"([^"]*?)",\s*"starterCode"\s*:\s*"((?:[^"\\]|\\.)*?)"\s*}/g;
+
+  while ((match = codingRegex.exec(input))) {
+    const question = match[1];
+    const exampleInput = match[2];
+    const exampleOutput = match[3];
+    const starterCode = match[4].replace(/\\n/g, "\n").replace(/\\"/g, '"');
+
+    // Optionally match constraints if present
+    const constraintsMatch = input.match(
+      new RegExp(
+        `"question"\\s*:\\s*"${question.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          "\\$&"
+        )}"[\\s\\S]*?"constraints"\\s*:\\s*"([^"]*?)"`
+      )
+    );
+    const constraints = constraintsMatch ? constraintsMatch[1] : "";
+
+    coding.push({
+      question,
+      constraints,
+      exampleInput,
+      exampleOutput,
+      code: starterCode,
+    });
+  }
+
+  return { name, mcqs, coding };
 }
 
-
-export async function generateTest(testId: string, onMessage: (chunk: string) => void) {
+export async function generateTest(
+  testId: string,
+  onMessage: (chunk: string) => void
+) {
   const res = await fetch(`/api/test/${testId}/questions`, {
-    method: 'POST',
+    method: "POST",
   });
 
   if (!res.body) throw new Error("No response body");
