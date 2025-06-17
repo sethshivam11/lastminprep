@@ -1,3 +1,8 @@
+import { AxiosError } from "axios";
+import mongoose from "mongoose";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
 export const languages = ["python", "java", "cpp", "c", "javascript", "sql"];
 
 export const difficulty = ["easy", "intermediate", "hard"];
@@ -21,8 +26,23 @@ export type CodingQuestion = {
   constraints?: string;
   exampleInput?: string;
   exampleOutput?: string;
-  code?: string;
 };
+
+export interface CodingAnswer {
+  question: string;
+  exampleInput?: string;
+  exampleOutput?: string;
+  constraints?: string;
+  inputFormat?: string;
+  outputFormat?: string;
+  answer: string;
+}
+
+export interface MCQAnswer {
+  question: string;
+  answer: string;
+  correct: boolean;
+}
 
 type ParsedTest = {
   name: string;
@@ -77,7 +97,6 @@ export function parseTestData(
     const question = match[1];
     const exampleInput = match[2];
     const exampleOutput = match[3];
-    const starterCode = match[4].replace(/\\n/g, "\n").replace(/\\"/g, '"');
 
     // Optionally match constraints if present
     const constraintsMatch = input.match(
@@ -95,7 +114,6 @@ export function parseTestData(
       constraints,
       exampleInput,
       exampleOutput,
-      code: starterCode,
     });
   }
 
@@ -122,4 +140,42 @@ export async function generateTest(
     const chunk = decoder.decode(value);
     onMessage(chunk);
   }
+}
+
+export function handleRouteError(error: unknown) {
+  console.log(error);
+  if (error instanceof mongoose.Error) {
+    return NextResponse.json(
+      {
+        message: error.message || "Error while saving test data",
+        error: error.message,
+      },
+      { status: 500 }
+    );
+  } else if (error instanceof z.ZodError) {
+    return NextResponse.json(
+      {
+        message: error.errors[0].message || "Error while validating test data",
+        error: error.errors,
+      },
+      { status: 400 }
+    );
+  }
+  return NextResponse.json(
+    { success: false, message: "Error while validating test data" },
+    { status: 500 }
+  );
+}
+
+export function handleError(error: unknown) {
+  console.log(error);
+  let message = "Something went wrong";
+  if (error instanceof AxiosError) {
+    message = error.response?.data.message;
+  }
+  return {
+    success: false,
+    data: null,
+    message,
+  };
 }

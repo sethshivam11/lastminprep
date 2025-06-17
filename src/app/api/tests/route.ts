@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/options";
 import { UserI } from "@/models/user.model";
+import { handleRouteError } from "@/lib/helpers";
 
 export async function GET() {
   await dbConnect();
@@ -52,13 +53,6 @@ export async function GET() {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Something went wrong",
-      },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }

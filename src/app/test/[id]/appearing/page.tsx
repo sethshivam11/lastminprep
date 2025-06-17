@@ -3,15 +3,13 @@
 import Guidelines from "@/components/Guidelines";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import CodingCard from "@/components/CodingCard";
-import McqCard from "@/components/McqCard";
-import SubmitDialog from "@/components/SubmitDialog";
 import TimerDialog from "@/components/TimerDialog";
 import { parseTestData } from "@/lib/helpers";
 import { useCompletion } from "@ai-sdk/react";
 import { getTest } from "@/services/tests";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import TestForm from "@/components/TestForm";
 
 function Page() {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +19,6 @@ function Page() {
     });
 
   const [isQuestionsPresent, setIsQuestionsPresent] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [testDetails, setTestDetails] = useState({
     difficulty: "",
     coding: "",
@@ -29,9 +26,8 @@ function Page() {
     codingCount: 0,
     language: "",
   });
-  const { name, mcqs, coding } = parseTestData(completion, isQuestionsPresent);
 
-  const handleChange = () => {};
+  const { name, mcqs, coding } = parseTestData(completion, isQuestionsPresent);
 
   const handleQuestionsPresent = async () => {
     const response = await getTest(id);
@@ -83,29 +79,37 @@ function Page() {
   return (
     <div className="flex flex-col gap-4 sm:p-10 p-4 max-w-5xl mx-auto min-h-screen">
       <Guidelines />
-
       {completion ? (
-        <div className="flex justify-between items-center gap-2">
-          <div className="space-y-4">
-            <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
-              {name}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              This test has {testDetails.mcqCount} multiple choice questions and{" "}
-              {testDetails.codingCount} coding question
-              {testDetails.codingCount > 1 && "s"} in{" "}
-              <span className="font-bold text-foreground capitalize">
-                {testDetails.language}
-              </span>{" "}
-              with{" "}
-              <span className="font-bold text-foreground capitalize">
-                {testDetails.difficulty}
-              </span>{" "}
-              difficulty.
-            </p>
+        <>
+          <div className="flex justify-between items-center gap-2">
+            <div className="space-y-4">
+              <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
+                {name}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                This test has {testDetails.mcqCount} multiple choice questions
+                and {testDetails.codingCount} coding question
+                {testDetails.codingCount > 1 && "s"} in{" "}
+                <span className="font-bold text-foreground capitalize">
+                  {testDetails.language}
+                </span>{" "}
+                with{" "}
+                <span className="font-bold text-foreground capitalize">
+                  {testDetails.difficulty}
+                </span>{" "}
+                difficulty.
+              </p>
+            </div>
+            <TimerDialog />
           </div>
-          <TimerDialog />
-        </div>
+          <TestForm
+            isLoading={isLoading}
+            coding={coding}
+            mcqs={mcqs}
+            language={testDetails.language}
+            testId={id}
+          />
+        </>
       ) : (
         <div className="flex flex-col justify-center items-center h-screen">
           <Loader2 className="animate-spin" size="40" />
@@ -113,32 +117,6 @@ function Page() {
             Loading questions...
           </p>
         </div>
-      )}
-
-      {mcqs.length > 0 &&
-        mcqs.map((mcq, index) => (
-          <McqCard
-            mcq={mcq}
-            language={testDetails.language}
-            handleChange={handleChange}
-            index={index}
-            key={`mcq-${index}`}
-          />
-        ))}
-      {coding.length > 0 &&
-        coding.map((coding, index) => (
-          <CodingCard
-            coding={coding}
-            handleChange={handleChange}
-            key={`coding-${index}`}
-          />
-        ))}
-      {!isLoading && completion && (
-        <SubmitDialog
-          open={dialogOpen}
-          setOpen={setDialogOpen}
-          handleSubmit={() => {}}
-        />
       )}
     </div>
   );

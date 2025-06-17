@@ -15,14 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-const chartData = [
-  {
-    correct: "correct",
-    questions: 90,
-    total: 100,
-    fill: "var(--color-correct)",
-  },
-];
 
 const chartConfig = {
   questions: {
@@ -34,7 +26,22 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function CorrectAnswers() {
+export function CorrectAnswers({
+  correct,
+  total,
+}: {
+  correct: number;
+  total: number;
+}) {
+  const chartData = [
+    {
+      correct: "correct",
+      questions: correct,
+      total,
+      fill: "var(--color-correct)",
+    },
+  ];
+
   return (
     <Card className="flex flex-col">
       <CardHeader>

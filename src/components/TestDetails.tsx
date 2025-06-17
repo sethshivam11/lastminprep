@@ -1,4 +1,3 @@
-import { Test } from "./TestTable";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import {
@@ -10,8 +9,9 @@ import {
   ListTodo,
   PlayCircle,
 } from "lucide-react";
+import { TestI } from "@/models/test.model";
 
-function TestDetails({ test }: { test: Test }) {
+function TestDetails({ test }: { test: TestI }) {
   return (
     <div className="space-y-4">
       <div className="flex max-sm:flex-col justify-between gap-2 sm:pb-10 py-4">
@@ -58,7 +58,7 @@ function TestDetails({ test }: { test: Test }) {
           <div className="space-y-1">
             <h3 className="text-muted-foreground">MCQs</h3>{" "}
             <p className="capitalize sm:text-2xl text-xl font-semibold">
-              {test.mcq}
+              {test.mcqCount}
             </p>
           </div>
         </div>
@@ -69,22 +69,22 @@ function TestDetails({ test }: { test: Test }) {
           <div className="space-y-1">
             <h3 className="text-muted-foreground">Coding</h3>{" "}
             <p className="capitalize sm:text-2xl text-xl font-semibold">
-              {test.coding}
+              {test.codingCount}
             </p>
           </div>
         </div>
       </div>
       <Button className="w-full sm:hidden" asChild>
-          <Link
-            href={`/test/${test.id}/appearing`}
-            className="flex items-center gap-2"
-          >
-            <PlayCircle className="h-20 w-20" />
-            Start Test
-          </Link>
-        </Button>
+        <Link
+          href={`/test/${test.id}/appearing`}
+          className="flex items-center gap-2"
+        >
+          <PlayCircle className="h-20 w-20" />
+          Start Test
+        </Link>
+      </Button>
       <div className="grid lg:grid-cols-2 gap-4">
-        {!test.jobDesc && (
+        {test.jobDescription && (
           <div className="ring-1 ring-input rounded-lg flex flex-col gap-5 p-6 shadow-sm">
             <div className="text-purple-500 flex gap-4">
               <Briefcase className="h-8 w-8" />
@@ -94,17 +94,12 @@ function TestDetails({ test }: { test: Test }) {
             </div>
             <div className="space-y-1">
               <p className="capitalize text-sm font-semibold text-muted-foreground">
-                {test.jobDesc}
-                We are looking for a Senior JavaScript Developer with 5+ years
-                of experience in building scalable web applications. The ideal
-                candidate should have: Strong expertise in React.js and Node.js,
-                Experience with microservices architecture, Knowledge of cloud
-                platforms (AWS/GCP), Understanding of CI/CD pipelines
+                {test.jobDescription}
               </p>
             </div>
           </div>
         )}
-        {!test.extra && (
+        {test.extraDescription && (
           <div className="ring-1 ring-input rounded-lg flex flex-col gap-5 p-6 shadow-sm">
             <div className="text-red-400 flex gap-4">
               <FileText className="h-8 w-8" />
@@ -114,10 +109,7 @@ function TestDetails({ test }: { test: Test }) {
             </div>
             <div className="space-y-1">
               <p className="capitalize text-sm font-semibold text-muted-foreground">
-                {test.jobDesc}
-                This test focuses on advanced JavaScript concepts including:
-                Closures and Prototypal Inheritance, Async Programming and Event
-                Loop, Performance Optimization, System Design Principles
+                {test.extraDescription}
               </p>
             </div>
           </div>

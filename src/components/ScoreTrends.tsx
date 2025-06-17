@@ -16,13 +16,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { attempt: 1, mcq: 9, coding: 2 },
-  { attempt: 2, mcq: 8, coding: 1 },
-  { attempt: 3, mcq: 9, coding: 1 },
-  { attempt: 4, mcq: 6, coding: 2 },
-];
-
 const chartConfig = {
   mcq: {
     label: "MCQs",
@@ -36,7 +29,17 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ScoreTrends() {
+export function ScoreTrends({
+  scores,
+}: {
+  scores: { mcq: number; coding: number }[];
+}) {
+  const chartData = scores.map((score, index) => ({
+    attempt: `Attempt ${index + 1}`,
+    mcq: score.mcq,
+    coding: score.coding,
+  }));
+
   return (
     <Card>
       <CardHeader>

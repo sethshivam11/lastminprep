@@ -5,6 +5,19 @@ export interface AttemptI extends Document {
   test: ObjectId;
   mcqScore: number;
   codingScore: number;
+  answers: {
+    mcqs: {
+      question: string;
+      answer: string;
+      correct: boolean;
+    }[];
+    coding: {
+      question: string;
+      answer: string;
+      marks: number;
+      feedback?: string;
+    }[];
+  };
   totalScore: number;
   createdAt: Date;
 }
@@ -32,6 +45,29 @@ const AttemptSchema: Schema<AttemptI> = new Schema({
     type: Number,
     required: true,
   },
+  answers: {
+    type: {
+      mcqs: [
+        {
+          question: { type: String, required: true },
+          answer: { type: String, required: true },
+          correct: { type: Boolean, default: false },
+        },
+      ],
+      coding: [
+        {
+          question: { type: String, required: true },
+          answer: { type: String, required: true },
+          marks: { type: Number, default: 0, min: 0, max: 10 },
+          feedback: { type: String, default: "" },
+        },
+      ],
+    },
+    default: {
+      mcqs: [],
+      coding: [],
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -39,6 +75,9 @@ const AttemptSchema: Schema<AttemptI> = new Schema({
 });
 
 const AttemptModel = (mongoose.models.attempt ||
-  mongoose.model<AttemptI>("attempt", AttemptSchema)) as mongoose.Model<AttemptI>;
+  mongoose.model<AttemptI>(
+    "attempt",
+    AttemptSchema
+  )) as mongoose.Model<AttemptI>;
 
-  export default AttemptModel;
+export default AttemptModel;

@@ -16,14 +16,15 @@ interface Props {
   mcq: MCQQuestion;
   language: string;
   index: number;
+  value: string;
   handleChange: (value: string) => void;
 }
 
-function McqCard({ mcq, language, index }: Props) {
+function McqCard({ mcq, language, index, value, handleChange }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{mcq.question}</CardTitle>
+        <CardTitle className="text-lg">Q{index + 1}: {mcq.question}</CardTitle>
         <CardDescription>
           {language && mcq.code && (
             <CodeBlock language={language} code={mcq.code?.trim()} />
@@ -32,15 +33,26 @@ function McqCard({ mcq, language, index }: Props) {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center">
-          <RadioGroup className="flex flex-col gap-5">
+          <RadioGroup
+            className="flex flex-col gap-5"
+            onValueChange={(value) => handleChange(value)}
+          >
             {mcq.options?.map((option, idx) => (
-              <div key={`q-${index}-${idx}`} className="flex space-x-2">
-                <RadioGroupItem value={option} id={`q-${index}-${idx}`} />
-                <Label htmlFor={`q-${index}-${idx}`}>{option}</Label>
+              <div key={`q-${index + 1}-${idx + 1}`} className="flex space-x-2">
+                <RadioGroupItem
+                  value={option}
+                  id={`q${index + 1}-o${idx + 1}`}
+                  checked={value === option}
+                />
+                <Label htmlFor={`q${index + 1}-o${idx + 1}`}>{option}</Label>
               </div>
             ))}
           </RadioGroup>
-          <Button variant="outline" className="self-end">
+          <Button
+            variant="outline"
+            className="self-end"
+            onClick={() => handleChange("")}
+          >
             Clear
           </Button>
         </div>

@@ -3,6 +3,7 @@ import UserModel from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { handleRouteError } from "@/lib/helpers";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
@@ -74,10 +75,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: "Internal server error", success: false },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }

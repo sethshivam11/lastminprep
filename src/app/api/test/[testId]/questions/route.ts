@@ -6,14 +6,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { UserI } from "@/models/user.model";
 import TestModel from "@/models/test.model";
-import mongoose from "mongoose";
+import { handleRouteError } from "@/lib/helpers";
 
 const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY,
 });
 
 export async function POST(
-  req: NextRequest,
+  _: NextRequest,
   { params }: { params: Promise<{ testId: string }> }
 ) {
   const { testId } = await params;
@@ -84,9 +84,7 @@ export async function POST(
           - Format the code exactly as it would appear in a code editor (e.g., properly indented, no escaped \`\\n\`).
           - If the MCQ doesn't involve code, set "code" to an empty string.
         - For Coding Questions:
-          - Use the "starterCode" key to provide the candidate with starter code.
-          - DO NOT use the "code" key in coding questions.
-          - Format the "starterCode" clearly and correctly (e.g., indented, with correct line breaks and syntax).
+          - Do not include any code or starter code for coding questions.
     7. Do not inline the code in a single line — maintain multiline formatting for readability.
     8. Escape any double quotes inside code properly using \\"
 
@@ -118,8 +116,6 @@ export async function POST(
       "coding": [
         {
           "question": "<Coding question>",
-          "inputFormat": "<Description>",
-          "outputFormat": "<Description>",
           "constraints": "<Constraints if any>",
           "exampleInput": "<Example input>",
           "exampleOutput": "<Example output>",
@@ -159,20 +155,7 @@ export async function POST(
 
     return result.toDataStreamResponse();
   } catch (error) {
-    console.log(error);
-    if (error instanceof mongoose.Error) {
-      return NextResponse.json(
-        {
-          message: error.message || "Error while saving test data",
-          error: error.message,
-        },
-        { status: 500 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Error while validating test data" },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }
 
@@ -224,13 +207,6 @@ export async function GET(
       message: "Test data fetched successfully",
     });
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Error while fetching test data",
-      },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }

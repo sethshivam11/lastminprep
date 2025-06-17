@@ -13,7 +13,7 @@ import {
   mcqCountSchema,
 } from "@/schemas/testSchema";
 import { z } from "zod";
-import mongoose from "mongoose";
+import { handleRouteError } from "@/lib/helpers";
 
 const testSchema = z.object({
   difficulty: difficultySchema,
@@ -78,31 +78,6 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          message:
-            error.errors[0].message || "Error while validating test data",
-          error: error.errors,
-        },
-        { status: 400 }
-      );
-    } else if (error instanceof mongoose.Error) {
-      return NextResponse.json(
-        {
-          message: error.message || "Error while saving test data",
-          error: error.message,
-        },
-        { status: 500 }
-      );
-    }
-    return Response.json(
-      {
-        success: false,
-        message: "Something went wrong",
-      },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }

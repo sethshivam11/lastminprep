@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { sendEmail } from "@/lib/mailer";
 import { mail, mailText } from "@/lib/mail";
+import { handleRouteError } from "@/lib/helpers";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
@@ -69,13 +70,6 @@ export async function POST(req: NextRequest) {
       }
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      {
-        message: "Internal Server Error",
-        success: false,
-      },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }

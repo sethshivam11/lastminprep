@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/db";
+import { handleRouteError } from "@/lib/helpers";
 import UserModel from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -45,13 +46,6 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        message: "An error occurred",
-        success: false,
-      },
-      { status: 500 }
-    );
+    return handleRouteError(error);
   }
 }

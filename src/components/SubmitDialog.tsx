@@ -11,18 +11,22 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
+  loading: boolean;
   handleSubmit: () => void;
 }
 
-function SubmitDialog({ open, setOpen, handleSubmit }: Props) {
+function SubmitDialog({ open, setOpen, loading, handleSubmit }: Props) {
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={open}>
       <AlertDialogTrigger asChild>
-        <Button size="lg">Submit</Button>
+        <Button size="lg" onClick={() => setOpen(true)}>
+          Submit
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -33,8 +37,12 @@ function SubmitDialog({ open, setOpen, handleSubmit }: Props) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSubmit}>Submit</AlertDialogAction>
+          <AlertDialogCancel disabled={loading} onClick={() => setOpen(false)}>
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction disabled={loading} onClick={handleSubmit}>
+            {loading ? <Loader2 className="animate-spin" /> : "Submit"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
