@@ -92,3 +92,12 @@ export const getAttempts = async (testId: string) => {
     handleError(error);
   }
 };
+
+export const getTests = async () => {
+  try {
+    const { data } = await axios.get("/api/tests");
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};

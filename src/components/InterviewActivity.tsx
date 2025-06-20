@@ -15,12 +15,13 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 const chartData = [
-  { day: "Wed", interview: 1 },
-  { day: "Thur", interview: 2 },
-  { day: "Fri", interview: 1 },
-  { day: "Sun", interview: 4 },
+  { day: "Mon", interview: 1 },
   { day: "Tue", interview: 2 },
-  { day: "Fri", interview: 3 },
+  { day: "Wed", interview: 1 },
+  { day: "Thur", interview: 0 },
+  { day: "Fri", interview: 0 },
+  { day: "Sat", interview: 2 },
+  { day: "Sun", interview: 0 },
 ];
 
 const chartConfig = {

@@ -14,6 +14,7 @@ export interface TestI extends Document {
   jobDescription?: string;
   extraDescription?: string;
   attempts: ObjectId[];
+  createdAt?: Date;
 }
 
 export interface MCQI extends Document {
@@ -80,6 +81,10 @@ const TestSchema: Schema<TestI> = new Schema({
   },
   jobDescription: String,
   extraDescription: String,
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
 });
 
 const TestModel = (mongoose.models.test ||

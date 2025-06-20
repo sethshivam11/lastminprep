@@ -24,7 +24,7 @@ const Page = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <Button type="submit" className="w-full" asChild>
-            <Link href="/auth/sign-in">
+            <Link href="/auth/sign-in" className="cursor-default">
               <Mail /> Continue with Email
             </Link>
           </Button>

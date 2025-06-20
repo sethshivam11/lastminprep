@@ -30,11 +30,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
             <Toaster richColors />
-            <div className="max-w-7xl mx-auto min-h-screen">
-              <Navbar />
-              {children}
-              <Footer />
-            </div>
+            <Navbar />
+            <div className="max-w-7xl mx-auto min-h-screen">{children}</div>
+            <Footer />
           </Providers>
         </ThemeProvider>
       </body>

@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,66 +24,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Filters, { Difficulty, FiltersI, Language } from "./Filters";
+import Filters, { FiltersI } from "./Filters";
 import Link from "next/link";
+import { TestI } from "@/models/test.model";
+import { getTests } from "@/services/tests";
 
-const data: Test[] = [
-  {
-    id: "1",
-    name: "Frontend Developer",
-    difficulty: "easy",
-    language: "javascript",
-    createdAt: "2025-12-03T05:56:59.519Z",
-    attempts: 1,
-    mcq: 10,
-    coding: 2,
-  },
-  {
-    id: "2",
-    name: "Backend Developer",
-    difficulty: "easy",
-    language: "python",
-    createdAt: "2025-12-04T05:15:59.519Z",
-    attempts: 2,
-    mcq: 10,
-    coding: 1,
-  },
-  {
-    id: "3",
-    name: "FullStack Developer",
-    difficulty: "intermediate",
-    language: "java",
-    createdAt: "2025-11-01T02:05:29.519Z",
-    attempts: 4,
-    mcq: 10,
-    coding: 1,
-  },
-  {
-    id: "4",
-    name: "Data Analyst",
-    difficulty: "hard",
-    language: "python",
-    createdAt: "2025-01-02T01:23:25.519Z",
-    attempts: 3,
-    mcq: 10,
-    coding: 2,
-  },
-];
-
-export type Test = {
-  id: string;
-  name: string;
-  difficulty: Difficulty;
-  language: Language;
-  createdAt: string;
-  attempts: number;
-  mcq: number;
-  coding: number;
-  jobDesc?: string;
-  extra?: string;
-};
-
-export const columns: ColumnDef<Test>[] = [
+export const columns: ColumnDef<TestI>[] = [
   {
     id: "select",
     enableSorting: false,
@@ -139,9 +85,14 @@ export const columns: ColumnDef<Test>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("language")}</div>
-    ),
+    cell: ({ row }) => {
+      const language = row.getValue("language") as string;
+      return (
+        <div className="capitalize">
+          {language === "cpp" ? "C++" : language}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "createdAt",
@@ -164,15 +115,17 @@ export const columns: ColumnDef<Test>[] = [
     ),
   },
   {
-    accessorKey: "mcq",
+    accessorKey: "mcqCount",
     header: "MCQs",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("mcq")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("mcqCount")}</div>
+    ),
   },
   {
-    accessorKey: "coding",
+    accessorKey: "codingCount",
     header: "Coding",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("coding")}</div>
+      <div className="capitalize">{row.getValue("codingCount")}</div>
     ),
   },
   {
@@ -193,12 +146,12 @@ export const columns: ColumnDef<Test>[] = [
     ),
   },
   {
-    accessorKey: "id",
+    accessorKey: "_id",
     header: "",
     cell: ({ row }) => {
       return (
         <Button size="sm" asChild>
-          <Link href={`/test/${row.getValue("id")}`}>View</Link>
+          <Link href={`/test/${row.getValue("_id")}`}>View</Link>
         </Button>
       );
     },
@@ -206,6 +159,9 @@ export const columns: ColumnDef<Test>[] = [
 ];
 
 export function TestTable() {
+  const [data, setData] = React.useState<TestI[]>([]);
+  const [loading, setLoading] = React.useState(false);
+
   const initialFilters: FiltersI = {
     mcq: [0, 50],
     coding: [0, 5],
@@ -215,6 +171,7 @@ export function TestTable() {
   };
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [errorMessage, setErrorMessage] = React.useState("");
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -226,16 +183,17 @@ export function TestTable() {
   const filteredData = React.useMemo(
     () =>
       data.filter((item) => {
-        const creationDate = new Date(item.createdAt);
+        const creationDate = new Date(`${item.createdAt}`);
         const fromDate = filters.date?.from
           ? new Date(filters.date.from)
           : null;
         const toDate = filters.date?.to ? new Date(filters.date.to) : null;
 
         const mcqInRange =
-          item.mcq >= filters.mcq[0] && item.mcq <= filters.mcq[1];
+          item.mcqCount >= filters.mcq[0] && item.mcqCount <= filters.mcq[1];
         const codingInRange =
-          item.coding >= filters.coding[0] && item.coding <= filters.coding[1];
+          item.codingCount >= filters.coding[0] &&
+          item.codingCount <= filters.coding[1];
 
         const difficultyMatches =
           filters.difficulty === "all" ||
@@ -277,6 +235,23 @@ export function TestTable() {
     },
   });
 
+  const getData = async () => {
+    setLoading(true);
+    const tests = await getTests();
+    console.log(tests);
+    if (tests.success) {
+      setData(tests.data);
+    } else {
+      setErrorMessage(tests.message || "");
+    }
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    if (data.length) return;
+    getData();
+  }, [data]);
+
   return (
     <div className="w-full">
       <div className="flex items-center gap-4 pb-4">
@@ -295,6 +270,17 @@ export function TestTable() {
           initialFilters={initialFilters}
           setIsFiltered={setIsFiltered}
         />
+        {isFiltered && (
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setFilters(initialFilters);
+              setIsFiltered(false);
+            }}
+          >
+            Clear all
+          </Button>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -337,9 +323,13 @@ export function TestTable() {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-30 text-center"
                 >
-                  No results.
+                  {loading ? (
+                    <Loader2 className="animate-spin mx-auto" />
+                  ) : (
+                    errorMessage || "No results."
+                  )}
                 </TableCell>
               </TableRow>
             )}

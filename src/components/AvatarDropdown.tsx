@@ -49,8 +49,13 @@ function AvatarDropdown() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            {theme === "dark" ? <Moon /> : <Sun />} Theme
+          <DropdownMenuSubTrigger className="flex items-center justify-center gap-2">
+            {theme === "dark" ? (
+              <Moon size="16" className="text-muted-foreground" />
+            ) : (
+              <Sun size="16" className="text-muted-foreground" />
+            )}
+            Theme
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>

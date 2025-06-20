@@ -98,7 +98,7 @@ function Filters({
                 setFilters({ ...filters, difficulty: value as Difficulty })
               }
             >
-              <SelectTrigger className="col-span-3" id="difficulty">
+              <SelectTrigger className="col-span-3 w-full" id="difficulty">
                 <SelectValue placeholder="Select difficulty" />
               </SelectTrigger>
               <SelectContent>
@@ -117,7 +117,7 @@ function Filters({
                 setFilters({ ...filters, language: value as Language })
               }
             >
-              <SelectTrigger className="col-span-3" id="language">
+              <SelectTrigger className="col-span-3 w-full" id="language">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
