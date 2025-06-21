@@ -2,6 +2,7 @@ import dbConnect from "@/lib/db";
 import AttemptModel from "@/models/attempt.model";
 import { NextRequest, NextResponse } from "next/server";
 import { handleRouteError } from "@/lib/helpers";
+import "@/models/test.model";
 
 export async function GET(
   req: NextRequest,
@@ -11,7 +12,12 @@ export async function GET(
   await dbConnect();
 
   try {
-    const attempt = await AttemptModel.findById(attemptId);
+    const attempt = await AttemptModel.findById(attemptId).populate({
+      model: "test",
+      path: "test",
+      select: "language",
+      strictPopulate: false,
+    });
     if (!attempt) {
       return NextResponse.json(
         {

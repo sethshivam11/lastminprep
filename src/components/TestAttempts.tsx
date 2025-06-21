@@ -23,57 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AttemptI } from "@/models/attempt.model";
+import { getAttempts } from "@/services/tests";
 
-const data: TestAttempt[] = [
-  {
-    id: "1",
-    createdAt: "2025-12-03T05:56:59.519Z",
-    attempted: 10,
-    score: 8,
-    skipped: 2,
-    accuracy: 80,
-    incorrect: 2,
-  },
-  {
-    id: "2",
-    createdAt: "2025-11-02T01:23:25.519Z",
-    attempted: 3,
-    score: 8,
-    skipped: 2,
-    accuracy: 80,
-    incorrect: 2,
-  },
-  {
-    id: "3",
-    createdAt: "2025-11-01T02:05:29.519Z",
-    attempted: 4,
-    score: 8,
-    skipped: 2,
-    accuracy: 80,
-    incorrect: 2,
-  },
-  {
-    id: "4",
-    createdAt: "2025-01-02T01:23:25.519Z",
-    attempted: 3,
-    score: 8,
-    skipped: 2,
-    accuracy: 80,
-    incorrect: 2,
-  },
-];
-
-export type TestAttempt = {
-  id: string;
-  score: number;
-  accuracy: number;
-  skipped: number;
-  attempted: number;
-  createdAt: string;
-  incorrect: number;
-};
-
-export const columns: ColumnDef<TestAttempt>[] = [
+export const columns: ColumnDef<AttemptI>[] = [
   {
     id: "select",
     enableSorting: false,
@@ -188,7 +141,8 @@ export const columns: ColumnDef<TestAttempt>[] = [
   },
 ];
 
-export function TestAttempts() {
+export function TestAttempts({ testId }: { testId: string }) {
+  const [data, setData] = React.useState<AttemptI[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -215,6 +169,18 @@ export function TestAttempts() {
       rowSelection,
     },
   });
+
+  React.useEffect(() => {
+    async function fetchData() {
+      const response = await getAttempts(testId);
+      if (response.success) {
+        console.log(response.data);
+        setData(response.data);
+      }
+    }
+    if (!testId) return;
+    fetchData();
+  }, [testId]);
 
   return (
     <div className="w-full">

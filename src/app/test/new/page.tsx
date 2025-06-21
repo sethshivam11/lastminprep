@@ -94,7 +94,7 @@ function Page() {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
@@ -126,7 +126,7 @@ function Page() {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select difficulty level" />
                   </SelectTrigger>
                   <SelectContent>
@@ -156,7 +156,7 @@ function Page() {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Number of MCQs" />
                     </SelectTrigger>
                     <SelectContent>
@@ -185,7 +185,7 @@ function Page() {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Number of Coding Questions" />
                     </SelectTrigger>
                     <SelectContent>

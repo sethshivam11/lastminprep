@@ -14,7 +14,7 @@ export const createTest = async (values: {
     const { data } = await axios.post("/api/test/create", values);
     return data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };
 
@@ -27,13 +27,13 @@ export const getTest = async (testId: string, details = false) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXTAUTH_URL;
+    const baseUrl = process.env.NEXTAUTH_URL || "";
     const { data } = await axios.get(
       `${baseUrl}/api/test/${testId}${details ? "?details=1" : ""}`
     );
     return data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };
 
@@ -55,7 +55,7 @@ export const submitTest = async (
     const { data } = await axios.post(`/api/test/${testId}/submit`, answers);
     return data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };
 
@@ -68,11 +68,11 @@ export const getTestAnalytics = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXTAUTH_URL;
+    const baseUrl = process.env.NEXTAUTH_URL || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}/analytics`);
     return data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };
 
@@ -85,11 +85,11 @@ export const getAttempts = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXTAUTH_URL;
+    const baseUrl = process.env.NEXTAUTH_URL || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}/attempts`);
     return data;
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 };
 

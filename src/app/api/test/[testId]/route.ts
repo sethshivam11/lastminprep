@@ -24,8 +24,7 @@ export async function GET(
       );
     }
 
-    const populateQuestions =
-      details === "1" ? "-codingQuestions -mcqQuestions" : "";
+    const populateQuestions = details === "1" ? "-questions" : "";
 
     const test = await TestModel.findById(testId, populateQuestions);
     if (!test) {

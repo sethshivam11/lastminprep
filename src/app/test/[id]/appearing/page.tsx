@@ -54,7 +54,6 @@ function Page() {
     const test = localStorage.getItem(`test-${id}`);
     if (test) {
       const parsedTest = JSON.parse(test);
-      console.log(parsedTest);
       setTestDetails(parsedTest);
       if (!parsedTest.questions || !parsedTest.questions.mcqs?.length) {
         getQuestions();

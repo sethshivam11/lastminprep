@@ -101,11 +101,12 @@ function TestForm({
       })),
     };
     const response = await submitTest(testId, body);
+    localStorage.removeItem(`test-${testId}`);
     setIsSubmitting(false);
     setDialogOpen(false);
     if (response?.success) {
       toast.success("Test submitted successfully!");
-      router.push(`/attempt/${response._id}`);
+      router.push(`/attempt/${response.data._id}`);
     }
   };
 
@@ -113,9 +114,9 @@ function TestForm({
     <>
       {mcqs.length > 0 && (
         <>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 pt-6">
             <HelpCircle className="h-6 w-6 text-green-600" />
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold">
               Multiple Choice Questions
             </h2>
             <Badge variant="secondary">{mcqs.length} questions</Badge>
@@ -135,9 +136,9 @@ function TestForm({
 
       {coding.length > 0 && (
         <>
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-2 pt-6">
             <Code className="h-6 w-6 text-purple-600" />
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold">
               Coding Questions
             </h2>
             <Badge variant="secondary">{coding.length} questions</Badge>

@@ -16,11 +16,11 @@ function TestDetails({ test }: { test: TestI }) {
     <div className="space-y-4">
       <div className="flex max-sm:flex-col justify-between gap-2 sm:pb-10 py-4">
         <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
-          {test.name} Test
+          {test.name}
         </h1>
         <Button size="lg" className="max-sm:hidden" asChild>
           <Link
-            href={`/test/${test.id}/appearing`}
+            href={`/test/${test._id}/appearing`}
             className="flex items-center gap-2"
           >
             <PlayCircle className="h-20 w-20" />

@@ -30,11 +30,11 @@ function CodingCard({ coding, value, index, handleChange }: Props) {
               <h4 className="font-semibold text-lg text-green-800 dark:text-green-600 mb-1">
                 Example
               </h4>
-              <div className="flex items-center justify-center gap-2 mb-1">
+              <div className="flex items-start justify-center gap-2 mb-1">
                 {coding.exampleInput && (
                   <div className="flex flex-col gap-1 w-full">
-                    <p className="text-sm font-medium text-green-700">Input:</p>
-                    <pre className="bg-white dark:bg-black p-2 rounded text-sm text-gray-800 dark:text-gray-200 border select-text">
+                    <p className="text-sm font-medium text-green-700 text-wrap">Input:</p>
+                    <pre className="bg-white dark:bg-black p-2 rounded text-sm text-gray-800 dark:text-gray-200 border select-text text-wrap">
                       {coding.exampleInput}
                     </pre>
                   </div>
@@ -42,10 +42,10 @@ function CodingCard({ coding, value, index, handleChange }: Props) {
 
                 {coding.exampleOutput && (
                   <div className="flex flex-col gap-1 w-full">
-                    <p className="text-sm font-medium text-green-700">
+                    <p className="text-sm font-medium text-green-700 text-wrap">
                       Output:
                     </p>
-                    <pre className="bg-white dark:bg-black p-2 rounded text-sm text-gray-800 dark:text-gray-200 border select-text">
+                    <pre className="bg-white dark:bg-black p-2 rounded text-sm text-gray-800 dark:text-gray-200 border select-text text-wrap">
                       {coding.exampleOutput}
                     </pre>
                   </div>

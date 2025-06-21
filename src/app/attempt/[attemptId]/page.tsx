@@ -13,6 +13,7 @@ import Link from "next/link";
 import { getAttempt } from "@/services/attempt";
 import { AttemptI } from "@/models/attempt.model";
 import { notFound } from "next/navigation";
+import CodeBlock from "@/components/CodeBlock";
 
 export default async function ResultsPage({
   params,
@@ -23,9 +24,11 @@ export default async function ResultsPage({
   const {
     data: attempt,
     success,
-  }: { data: AttemptI; success: false; message: string } = await getAttempt(
-    attemptId
-  );
+  }: {
+    data: AttemptI & { test: { _id: string; language: string } };
+    success: boolean;
+    message: string;
+  } = await getAttempt(attemptId);
 
   if (!attempt || !success) {
     notFound();
@@ -45,7 +48,7 @@ export default async function ResultsPage({
           </h1>
           <div className="flex flex-wrap gap-4">
             <Card className="flex-1 min-w-[200px]">
-              <CardContent className="pt-6">
+              <CardContent>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
                     {mcqScore}/{totalMcqs}
@@ -55,7 +58,7 @@ export default async function ResultsPage({
               </CardContent>
             </Card>
             <Card className="flex-1 min-w-[200px]">
-              <CardContent className="pt-6">
+              <CardContent>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">
                     {codingScore}/{maxCodingScore}
@@ -67,7 +70,7 @@ export default async function ResultsPage({
               </CardContent>
             </Card>
             <Card className="flex-1 min-w-[200px]">
-              <CardContent className="pt-6">
+              <CardContent>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">
                     {Math.round(
@@ -97,7 +100,7 @@ export default async function ResultsPage({
           <div className="space-y-4">
             {attempt.answers?.mcqs.map((mcq, index) => (
               <Card key={index} className="shadow-sm">
-                <CardHeader className="pb-3">
+                <CardHeader>
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg flex-1">
                       Question {index + 1}: {mcq.question}
@@ -118,7 +121,7 @@ export default async function ResultsPage({
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="bg-gray-100 dark:bg-stone-900 p-3 rounded">
+                  <div className="bg-gray-100 dark:bg-stone-950 p-3 rounded">
                     <strong>Your Answer:</strong>{" "}
                     {mcq.answer || "No answer provided"}
                   </div>
@@ -141,7 +144,7 @@ export default async function ResultsPage({
             <div className="space-y-6">
               {attempt.answers?.coding.map((coding, index) => (
                 <Card key={index} className="shadow-sm">
-                  <CardHeader className="pb-3">
+                  <CardHeader>
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg flex-1">
                         Problem {index + 1}: {coding.question}
@@ -160,13 +163,14 @@ export default async function ResultsPage({
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div>
+                    <div className="text-sm">
                       <h4 className="font-semibold text-sm text-muted-foreground mb-2">
                         Your Solution:
                       </h4>
-                      <pre className="bg-stone-100 dark:bg-stone-900 p-3 rounded text-sm overflow-x-auto font-mono">
-                        {coding.answer || "No solution provided"}
-                      </pre>
+                      <CodeBlock
+                        code={coding.answer}
+                        language={attempt.test.language || ""}
+                      />
                     </div>
 
                     <div>
@@ -193,7 +197,7 @@ export default async function ResultsPage({
               Dashboard
             </Button>
           </Link>
-          <Link href={`/test/${attempt.test}`}>
+          <Link href={`/test/${attempt.test._id}`}>
             <Button variant="outline">
               <RotateCcw className="h-4 w-4 mr-2" />
               Retake Test

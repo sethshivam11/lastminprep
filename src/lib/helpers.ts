@@ -58,7 +58,6 @@ export function parseTestData(
 
   if (isJSON) {
     const output = JSON.parse(input);
-
     return {
       name: output.name,
       mcqs: output.questions.mcqs,
@@ -72,7 +71,6 @@ export function parseTestData(
   const nameMatch = input.match(/"name"\s*:\s*"([^"]*)"/);
   const name = nameMatch ? nameMatch[1] : "";
 
-  // Match MCQs with "code" that can be empty or multiline
   const mcqRegex =
     /{\s*"question"\s*:\s*"([^"]+?)",\s*"code"\s*:\s*"((?:[^"\\]|\\.)*?)",\s*"options"\s*:\s*\[((?:\s*"[^"]*"\s*,?\s*)+)\],\s*"answer"\s*:\s*"([^"]+?)"\s*}/g;
 
@@ -89,57 +87,19 @@ export function parseTestData(
     mcqs.push({ question, code, options, answer });
   }
 
-  // Match coding questions with starterCode (renamed from code)
   const codingRegex =
-    /{\s*"question"\s*:\s*"([^"]+?)",[^}]*?"exampleInput"\s*:\s*"([^"]*?)",\s*"exampleOutput"\s*:\s*"([^"]*?)",\s*"starterCode"\s*:\s*"((?:[^"\\]|\\.)*?)"\s*}/g;
+    /{\s*"question"\s*:\s*"([^"]+?)",\s*"exampleInput"\s*:\s*"([^"]*?)",\s*"exampleOutput"\s*:\s*"([^"]*?)"(?:,\s*"constraints"\s*:\s*"([^"]*?)")?\s*}/g;
 
   while ((match = codingRegex.exec(input))) {
     const question = match[1];
     const exampleInput = match[2];
     const exampleOutput = match[3];
+    const constraints = match[4] || "";
 
-    // Optionally match constraints if present
-    const constraintsMatch = input.match(
-      new RegExp(
-        `"question"\\s*:\\s*"${question.replace(
-          /[.*+?^${}()|[\]\\]/g,
-          "\\$&"
-        )}"[\\s\\S]*?"constraints"\\s*:\\s*"([^"]*?)"`
-      )
-    );
-    const constraints = constraintsMatch ? constraintsMatch[1] : "";
-
-    coding.push({
-      question,
-      constraints,
-      exampleInput,
-      exampleOutput,
-    });
+    coding.push({ question, constraints, exampleInput, exampleOutput });
   }
 
   return { name, mcqs, coding };
-}
-
-export async function generateTest(
-  testId: string,
-  onMessage: (chunk: string) => void
-) {
-  const res = await fetch(`/api/test/${testId}/questions`, {
-    method: "POST",
-  });
-
-  if (!res.body) throw new Error("No response body");
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let done = false;
-
-  while (!done) {
-    const { value, done: doneReading } = await reader.read();
-    done = doneReading;
-    const chunk = decoder.decode(value);
-    onMessage(chunk);
-  }
 }
 
 export function handleRouteError(error: unknown) {
