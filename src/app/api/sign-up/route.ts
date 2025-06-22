@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { sendEmail } from "@/lib/mailer";
 import { mail, mailText } from "@/lib/mail";
 import { handleRouteError } from "@/lib/helpers";
+import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
@@ -57,6 +58,11 @@ export async function POST(req: NextRequest) {
       subject: "Verify your email",
       text: mailText(verifyCode),
       html: mail(verifyCode),
+    });
+
+    const cookieStore = await cookies();
+    cookieStore.set("token", password, {
+      expires: new Date(Date.now() + 10 * 60 * 1000),
     });
 
     return NextResponse.json(

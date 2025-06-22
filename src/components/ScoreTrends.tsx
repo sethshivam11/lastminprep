@@ -122,7 +122,7 @@ export function ScoreTrends({
             </AreaChart>
           </ChartContainer>
         ) : loading ? (
-          <div className="flex items-center justify-center h-40">
+          <div className="flex items-center justify-center h-full min-h-40">
             <Loader2 className="animate-spin" size="40" />
           </div>
         ) : (

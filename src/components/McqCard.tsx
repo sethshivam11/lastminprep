@@ -24,7 +24,9 @@ function McqCard({ mcq, language, index, value, handleChange }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Q{index + 1}: {mcq.question}</CardTitle>
+        <CardTitle className="text-lg">
+          Q{index + 1}: {mcq.question}
+        </CardTitle>
         <CardDescription>
           {language && mcq.code && (
             <CodeBlock language={language} code={mcq.code?.trim()} />
@@ -40,7 +42,7 @@ function McqCard({ mcq, language, index, value, handleChange }: Props) {
             {mcq.options?.map((option, idx) => (
               <div key={`q-${index + 1}-${idx + 1}`} className="flex space-x-2">
                 <RadioGroupItem
-                  value={option}
+                  value={idx.toString()}
                   id={`q${index + 1}-o${idx + 1}`}
                   checked={value === option}
                 />

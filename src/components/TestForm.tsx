@@ -79,13 +79,16 @@ function TestForm({
       setAnswers((prev) => ({
         ...prev,
         mcqs: prev.mcqs.map((ans, idx) => {
-          if (idx === index)
+          const optionIndex = parseInt(value);
+          if (idx === index && optionIndex >= 0) {
+            const answer = mcqs[index].options[parseInt(value)];
+            const correct = mcqs[index].answer === answer;
             return {
               ...ans,
-              answer: value,
-              correct: value === mcqs[index].answer,
+              answer,
+              correct,
             };
-          else return ans;
+          } else return ans;
         }),
       }));
     }
@@ -138,9 +141,7 @@ function TestForm({
         <>
           <div className="flex items-center gap-2 pt-6">
             <Code className="h-6 w-6 text-purple-600" />
-            <h2 className="text-2xl font-semibold">
-              Coding Questions
-            </h2>
+            <h2 className="text-2xl font-semibold">Coding Questions</h2>
             <Badge variant="secondary">{coding.length} questions</Badge>
           </div>
           {coding.map((coding, index) => (

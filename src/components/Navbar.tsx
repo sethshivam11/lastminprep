@@ -89,7 +89,13 @@ function Navbar() {
           </DrawerContent>
         </Drawer>
         <Link
-          href={location.includes("/appearing") ? "/" : "#"}
+          href={
+            location.includes("/appearing")
+              ? "#"
+              : status === "authenticated"
+              ? "/dashboard"
+              : "/"
+          }
           className={`font-extrabold text-lg tracking-tight flex gap-2 items-center justify-center ${
             location.includes("appearing") ? "max-sm:w-full" : ""
           }`}

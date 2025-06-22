@@ -4,7 +4,7 @@ import { handleError } from "@/lib/helpers";
 
 export const createTest = async (values: {
   difficulty: "easy" | "intermediate" | "hard";
-  codingCount: "0" | "1" | "2" | "3";
+  codingCount: "0" | "1" | "2" | "3" | "4" | "5";
   mcqCount: "5" | "10" | "15" | "20";
   language: "javascript" | "python" | "java" | "cpp" | "c" | "sql";
   extraDesc?: string;
@@ -27,7 +27,7 @@ export const getTest = async (testId: string, details = false) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
     const { data } = await axios.get(
       `${baseUrl}/api/test/${testId}${details ? "?details=1" : ""}`
     );
@@ -68,7 +68,7 @@ export const getTestAnalytics = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}/analytics`);
     return data;
   } catch (error) {
@@ -85,7 +85,7 @@ export const getAttempts = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}/attempts`);
     return data;
   } catch (error) {
@@ -96,6 +96,15 @@ export const getAttempts = async (testId: string) => {
 export const getTests = async () => {
   try {
     const { data } = await axios.get("/api/tests");
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const testsAnalytics = async () => {
+  try {
+    const { data } = await axios.get("/api/tests/analytics");
     return data;
   } catch (error) {
     return handleError(error);

@@ -13,7 +13,7 @@ export const updateProfile = async (body: {
   linkedin?: string;
 }) => {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
     const { data } = await axios.post(`${baseUrl}/api/profile/save`, body);
     return data;
   } catch (error) {

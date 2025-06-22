@@ -16,12 +16,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useMemo } from "react";
-
-const chartData = [
-  { level: "easy", difficulty: 8, fill: "var(--color-easy)" },
-  { level: "intermediate", difficulty: 5, fill: "var(--color-intermediate)" },
-  { level: "hard", difficulty: 2, fill: "var(--color-hard)" },
-];
+import { Difficulties } from "./DashboardAnalytics";
+import { Loader2 } from "lucide-react";
 
 const chartConfig = {
   easy: {
@@ -38,10 +34,25 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChallengeDifficulty() {
+export function ChallengeDifficulty({
+  loading,
+  difficulties,
+}: {
+  loading: boolean;
+  difficulties: Difficulties[];
+}) {
+  const chartData = ["easy", "intermediate", "hard"].map((level) => {
+    const entry = difficulties.find((d) => d.difficulty === level);
+    return {
+      level,
+      difficulty: entry?.count || 0,
+      fill: `var(--color-${level})`,
+    };
+  });
+
   const totalTests = useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.difficulty, 0);
-  }, []);
+  }, [difficulties]);
 
   return (
     <Card className="flex flex-col">
@@ -51,72 +62,89 @@ export function ChallengeDifficulty() {
           Track your progress across difficulties
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-full"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={chartData}
-              dataKey="difficulty"
-              nameKey="level"
-              innerRadius={60}
-              strokeWidth={5}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
+      <CardContent className="flex-1 pb-0 h-full">
+        {loading ? (
+          <div className="flex items-center justify-center h-full min-h-40">
+            <Loader2 className="animate-spin" size="40" />
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-full"
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie
+                data={chartData}
+                dataKey="difficulty"
+                nameKey="level"
+                innerRadius={60}
+                strokeWidth={5}
+              >
+                <Label
+                  content={({ viewBox }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <text
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
                         >
-                          {totalTests.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Difficulty
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-3xl font-bold"
+                          >
+                            {totalTests.toLocaleString()}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
+                            Difficulty
+                          </tspan>
+                        </text>
+                      );
+                    }
+                  }}
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        )}
       </CardContent>
-      <CardFooter className="flex-col gap-1 items-start">
-        <ul className="text-sm text-muted-foreground">
-          <li>
-            Easy:{" "}
-            {Math.floor((chartData[0]?.difficulty * 100) / totalTests || 0)}%
-          </li>
-          <li>
-            Intermediate:{" "}
-            {Math.floor((chartData[1]?.difficulty * 100) / totalTests || 0)}%
-          </li>
-          <li>
-            Hard:{" "}
-            {Math.floor((chartData[2]?.difficulty * 100) / totalTests || 0)}%
-          </li>
-        </ul>
-      </CardFooter>
+      {!loading && (
+        <CardFooter className="flex-col gap-1 items-start">
+          <ul className="text-sm text-muted-foreground">
+            <li>
+              Easy:{" "}
+              <span className="text-foreground">
+                {Math.floor((chartData[0]?.difficulty * 100) / totalTests || 0)}
+                %
+              </span>
+            </li>
+            <li>
+              Intermediate:{" "}
+              <span className="text-foreground">
+                {Math.floor((chartData[1]?.difficulty * 100) / totalTests || 0)}
+                %
+              </span>
+            </li>
+            <li>
+              Hard:{" "}
+              <span className="text-foreground">
+                {Math.floor((chartData[2]?.difficulty * 100) / totalTests || 0)}
+                %
+              </span>
+            </li>
+          </ul>
+        </CardFooter>
+      )}
     </Card>
   );
 }

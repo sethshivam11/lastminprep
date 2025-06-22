@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { AttemptI } from "@/models/attempt.model";
 import { getAttempts } from "@/services/tests";
+import Link from "next/link";
 
 export const columns: ColumnDef<AttemptI>[] = [
   {
@@ -89,7 +90,7 @@ export const columns: ColumnDef<AttemptI>[] = [
     ),
   },
   {
-    accessorKey: "score",
+    accessorKey: "totalScore",
     header: ({ column }) => {
       return (
         <Button
@@ -102,11 +103,11 @@ export const columns: ColumnDef<AttemptI>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("score")}</div>
+      <div className="capitalize">{row.getValue("totalScore")}</div>
     ),
   },
   {
-    accessorKey: "accuracy",
+    accessorKey: "maxScore",
     header: ({ column }) => {
       return (
         <Button
@@ -118,7 +119,14 @@ export const columns: ColumnDef<AttemptI>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div>{row.getValue("accuracy") + "%"}</div>,
+    cell: ({ row }) => {
+      const maxScore = parseInt(row.getValue("maxScore"));
+      const totalScore = parseInt(row.getValue("totalScore"));
+      const accuracy = maxScore
+        ? ((totalScore / maxScore) * 100).toFixed(1)
+        : 0;
+      return <div>{accuracy + "%"}</div>;
+    },
   },
   {
     accessorKey: "createdAt",
@@ -139,10 +147,22 @@ export const columns: ColumnDef<AttemptI>[] = [
       </div>
     ),
   },
+  {
+    accessorKey: "_id",
+    header: "Results",
+    cell: ({ row }) => {
+      return (
+        <Button size="sm" asChild>
+          <Link href={`/attempt/${row.getValue("_id")}`}>View</Link>
+        </Button>
+      );
+    },
+  },
 ];
 
-export function TestAttempts({ testId }: { testId: string }) {
+export function AttemptsTable({ testId }: { testId: string }) {
   const [data, setData] = React.useState<AttemptI[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -172,11 +192,12 @@ export function TestAttempts({ testId }: { testId: string }) {
 
   React.useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       const response = await getAttempts(testId);
       if (response.success) {
-        console.log(response.data);
         setData(response.data);
       }
+      setLoading(false);
     }
     if (!testId) return;
     fetchData();
@@ -227,7 +248,11 @@ export function TestAttempts({ testId }: { testId: string }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {loading ? (
+                    <Loader2 className="animate-spin mx-auto" />
+                  ) : (
+                    "No results."
+                  )}
                 </TableCell>
               </TableRow>
             )}

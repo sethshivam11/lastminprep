@@ -10,6 +10,7 @@ import {
   PlayCircle,
 } from "lucide-react";
 import { TestI } from "@/models/test.model";
+import StartTest from "./StartTest";
 
 function TestDetails({ test }: { test: TestI }) {
   return (
@@ -18,15 +19,7 @@ function TestDetails({ test }: { test: TestI }) {
         <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
           {test.name}
         </h1>
-        <Button size="lg" className="max-sm:hidden" asChild>
-          <Link
-            href={`/test/${test._id}/appearing`}
-            className="flex items-center gap-2"
-          >
-            <PlayCircle className="h-20 w-20" />
-            Start Test
-          </Link>
-        </Button>
+        <StartTest test={test} />
       </div>
       <div className="grid lg:grid-cols-4 grid-cols-2 gap-4">
         <div className="ring-1 ring-input rounded-lg flex items-center gap-5 py-4 px-6 shadow-sm">

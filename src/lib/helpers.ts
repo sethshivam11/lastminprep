@@ -56,31 +56,44 @@ export function parseTestData(
 ): ParsedTest {
   if (!input) return { name: "", mcqs: [], coding: [] };
 
-  if (isJSON) {
-    const output = JSON.parse(input);
-    return {
-      name: output.name,
-      mcqs: output.questions.mcqs,
-      coding: output.questions.coding,
-    };
-  }
-
   const mcqs: MCQQuestion[] = [];
   const coding: CodingQuestion[] = [];
+
+  try {
+    if (isJSON) {
+      const output = JSON.parse(input);
+      return {
+        name: output.name,
+        mcqs: output.questions.mcqs,
+        coding: output.questions.coding,
+      };
+    }
+
+    const jsonBlock = input.match(/```json([\s\S]*?)```/);
+    if (jsonBlock) {
+      const parsed = JSON.parse(jsonBlock[1].trim());
+      return {
+        name: parsed.name,
+        mcqs: parsed.questions.mcqs,
+        coding: parsed.questions.coding,
+      };
+    }
+  } catch (err) {
+    console.warn("JSON parsing failed, falling back to regex...", err);
+  }
 
   const nameMatch = input.match(/"name"\s*:\s*"([^"]*)"/);
   const name = nameMatch ? nameMatch[1] : "";
 
   const mcqRegex =
-    /{\s*"question"\s*:\s*"([^"]+?)",\s*"code"\s*:\s*"((?:[^"\\]|\\.)*?)",\s*"options"\s*:\s*\[((?:\s*"[^"]*"\s*,?\s*)+)\],\s*"answer"\s*:\s*"([^"]+?)"\s*}/g;
+    /{\s*"question"\s*:\s*"((?:\\.|[^"\\])*)",\s*"code"\s*:\s*"((?:\\.|[^"\\])*)",\s*"options"\s*:\s*\[((?:(?:\s*"[^"]*"\s*,?)+))\],\s*"answer"\s*:\s*"([^"]*?)"\s*}/g;
 
   let match;
   while ((match = mcqRegex.exec(input))) {
-    const question = match[1];
+    const question = match[1].replace(/\\"/g, '"');
     const code = match[2].replace(/\\n/g, "\n").replace(/\\"/g, '"');
-    const optionsRaw = match[3];
-    const options = optionsRaw
-      .split(",")
+    const options = match[3]
+      .split(/,(?=\s*")/) // split only at commas between quoted strings
       .map((opt) => opt.trim().replace(/^"|"$/g, ""));
     const answer = match[4];
 
@@ -88,13 +101,13 @@ export function parseTestData(
   }
 
   const codingRegex =
-    /{\s*"question"\s*:\s*"([^"]+?)",\s*"exampleInput"\s*:\s*"([^"]*?)",\s*"exampleOutput"\s*:\s*"([^"]*?)"(?:,\s*"constraints"\s*:\s*"([^"]*?)")?\s*}/g;
+    /{\s*"question"\s*:\s*"((?:\\.|[^"\\])*)",\s*"exampleInput"\s*:\s*"((?:\\.|[^"\\])*)",\s*"exampleOutput"\s*:\s*"((?:\\.|[^"\\])*)"(?:,\s*"constraints"\s*:\s*"((?:\\.|[^"\\])*)")?\s*}/g;
 
   while ((match = codingRegex.exec(input))) {
-    const question = match[1];
-    const exampleInput = match[2];
-    const exampleOutput = match[3];
-    const constraints = match[4] || "";
+    const question = match[1].replace(/\\"/g, '"');
+    const exampleInput = match[2].replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const exampleOutput = match[3].replace(/\\n/g, "\n").replace(/\\"/g, '"');
+    const constraints = (match[4] || "").replace(/\\"/g, '"');
 
     coding.push({ question, constraints, exampleInput, exampleOutput });
   }

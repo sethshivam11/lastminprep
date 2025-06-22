@@ -1,24 +1,25 @@
 "use client";
 
 import Guidelines from "@/components/Guidelines";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import TimerDialog from "@/components/TimerDialog";
 import { parseTestData } from "@/lib/helpers";
 import { useCompletion } from "@ai-sdk/react";
 import { getTest } from "@/services/tests";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import TestForm from "@/components/TestForm";
 
 function Page() {
-  const { id } = useParams<{ id: string }>();
+  const query = useSearchParams();
+  const { testId } = useParams<{ testId: string }>();
   const { completion, error, setCompletion, complete, isLoading } =
     useCompletion({
-      api: `/api/test/${id}/questions`,
+      api: `/api/test/${testId}/questions`,
     });
 
   const [isQuestionsPresent, setIsQuestionsPresent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [testDetails, setTestDetails] = useState({
     difficulty: "",
     coding: "",
@@ -29,36 +30,36 @@ function Page() {
 
   const { name, mcqs, coding } = parseTestData(completion, isQuestionsPresent);
 
-  const handleQuestionsPresent = async () => {
-    const response = await getTest(id);
+  const handleQuestionsPresent = async (testDetailsPresent: boolean = true) => {
+    const response = await getTest(testId);
     if (response?.success) {
       setIsQuestionsPresent(true);
       setCompletion(JSON.stringify(response.data));
-    }
-  };
-
-  const getQuestions = async () => {
-    try {
-      complete("");
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error);
-        toast.error(
-          error.message || "Something went wrong while generating questions"
-        );
+      if (!testDetailsPresent) {
+        setTestDetails({
+          difficulty: response.data.difficulty,
+          coding: response.data.coding,
+          mcqCount: response.data.mcqCount,
+          codingCount: response.data.codingCount,
+          language: response.data.language,
+        });
       }
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const test = localStorage.getItem(`test-${id}`);
-    if (test) {
-      const parsedTest = JSON.parse(test);
-      setTestDetails(parsedTest);
-      if (!parsedTest.questions || !parsedTest.questions.mcqs?.length) {
-        getQuestions();
-      } else {
-        setIsQuestionsPresent(true);
+    setLoading(true);
+    const questionsPresent = query.get("questionsPresent");
+    if (questionsPresent === "1") {
+      handleQuestionsPresent(false);
+    } else {
+      const test = localStorage.getItem(`test-${testId}`);
+      if (test) {
+        const parsedTest = JSON.parse(test);
+        setTestDetails(parsedTest);
+        setLoading(false);
+        complete("");
       }
     }
   }, []);
@@ -72,13 +73,14 @@ function Page() {
       if (response.message === "Test already has questions") {
         handleQuestionsPresent();
       }
+      setLoading(false);
     }
   }, [error]);
 
   return (
     <div className="flex flex-col gap-4 sm:p-10 p-4 max-w-5xl mx-auto min-h-screen">
       <Guidelines />
-      {completion ? (
+      {completion.length > 0 && (
         <>
           <div className="flex justify-between items-center gap-2">
             <div className="space-y-4">
@@ -106,10 +108,11 @@ function Page() {
             coding={coding}
             mcqs={mcqs}
             language={testDetails.language}
-            testId={id}
+            testId={testId}
           />
         </>
-      ) : (
+      )}
+      {loading && completion.length == 0 && (
         <div className="flex flex-col justify-center items-center h-screen">
           <Loader2 className="animate-spin" size="40" />
           <p className="text-muted-foreground text-sm mt-2">

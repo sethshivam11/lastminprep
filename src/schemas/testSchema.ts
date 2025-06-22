@@ -37,7 +37,7 @@ const mcqCountSchema = z.enum(["5", "10", "15", "20"], {
   message: "Invalid mcq count",
 });
 
-const codingCountSchema = z.enum(["0", "1", "2", "3"], {
+const codingCountSchema = z.enum(["0", "1", "2", "3", "4", "5"], {
   message: "Invalid coding count",
 });
 

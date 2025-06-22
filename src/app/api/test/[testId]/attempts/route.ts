@@ -44,6 +44,15 @@ export async function GET(
     const attempts = await AttemptModel.aggregate([
       { $match: { test: new mongoose.Types.ObjectId(testId) } },
       {
+        $lookup: {
+          from: "tests",
+          localField: "test",
+          foreignField: "_id",
+          as: "testDetails",
+        },
+      },
+      { $unwind: "$testDetails" },
+      {
         $project: {
           user: 1,
           totalScore: 1,
@@ -93,6 +102,14 @@ export async function GET(
               },
             },
           },
+          maxScore: {
+            $add: [
+              { $multiply: [{ $size: "$testDetails.questions.mcqs" }, 1] },
+              {
+                $multiply: [{ $size: "$testDetails.questions.coding" }, 10],
+              },
+            ],
+          },
         },
       },
       {
@@ -100,7 +117,6 @@ export async function GET(
           attempted: { $add: ["$attemptedMcqs", "$attemptedCoding"] },
           skipped: { $add: ["$skippedMcqs", "$skippedCoding"] },
           incorrect: "$incorrectMcqs",
-          score: "$totalScore",
         },
       },
       {
@@ -110,7 +126,9 @@ export async function GET(
           attempted: 1,
           skipped: 1,
           incorrect: 1,
-          score: 1,
+          accuracy: 1,
+          totalScore: 1,
+          maxScore: 1,
         },
       },
     ]);

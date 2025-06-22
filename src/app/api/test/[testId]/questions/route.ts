@@ -61,7 +61,7 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          data: test,
+          data: null,
           message: "Test already has questions",
         },
         { status: 409 }

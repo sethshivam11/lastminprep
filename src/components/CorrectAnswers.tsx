@@ -108,7 +108,7 @@ export function CorrectAnswers({
             </RadialBarChart>
           </ChartContainer>
         ) : loading ? (
-          <div className="flex items-center justify-center w-full h-40">
+          <div className="flex items-center justify-center w-full h-full min-h-40">
             <Loader2 className="animate-spin" size="40" />
           </div>
         ) : (

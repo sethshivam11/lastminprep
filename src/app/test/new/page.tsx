@@ -67,10 +67,8 @@ function Page() {
         JSON.stringify(response.data)
       );
       router.push(`/test/${response.data._id}/appearing`);
-      setLoading(false);
       return;
     }
-    setLoading(false);
     toast.error(response.message);
   }
 

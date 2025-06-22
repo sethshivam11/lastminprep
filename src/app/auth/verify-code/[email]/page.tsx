@@ -52,8 +52,10 @@ const Page = ({ params }: { params: Promise<{ email: string }> }) => {
       const { data } = await axios.post("/api/verify-code", payload);
 
       if (data?.success) {
-        router.replace("/dashboard");
-        toast.success("Account verified successfully");
+        router.replace("/auth/sign-in");
+        toast.success("Account verified successfully", {
+          description: "You can now sign in with your account",
+        });
       } else {
         toast.error("Cannot verify code", {
           description: data?.message || "An error occurred",
@@ -133,6 +135,20 @@ const Page = ({ params }: { params: Promise<{ email: string }> }) => {
           </CardTitle>
           <CardDescription className="text-center">
             Enter the OTP sent to your email address to verify your account
+            <Button
+              onClick={() => {
+                console.log(
+                  decodeURIComponent(
+                    document.cookie
+                      .split("; ")
+                      .find((row) => row.startsWith("temp-signup"))
+                      ?.split("=")[1] || ""
+                  )
+                );
+              }}
+            >
+              Log
+            </Button>
           </CardDescription>
         </CardHeader>
         <CardContent className="pb-0">

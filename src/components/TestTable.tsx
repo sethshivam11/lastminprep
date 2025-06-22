@@ -48,7 +48,7 @@ export const columns: ColumnDef<TestI>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Test Name
+          Name
           <ArrowUpDown />
         </Button>
       );
@@ -160,7 +160,7 @@ export const columns: ColumnDef<TestI>[] = [
 
 export function TestTable() {
   const [data, setData] = React.useState<TestI[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   const initialFilters: FiltersI = {
     mcq: [0, 50],
@@ -235,20 +235,18 @@ export function TestTable() {
     },
   });
 
-  const getData = async () => {
-    setLoading(true);
-    const tests = await getTests();
-    console.log(tests);
-    if (tests.success) {
-      setData(tests.data);
-    } else {
-      setErrorMessage(tests.message || "");
-    }
-    setLoading(false);
-  };
-
   React.useEffect(() => {
-    if (data.length) return;
+    const getData = async () => {
+      setLoading(true);
+      const tests = await getTests();
+      if (tests.success) {
+        setData(tests.data);
+      } else {
+        setErrorMessage(tests.message || "");
+      }
+      setLoading(false);
+    };
+    if (data.length) return setLoading(false);
     getData();
   }, [data]);
 
