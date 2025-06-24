@@ -23,7 +23,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Attempts } from "./DashboardAnalytics";
-import { Loader2 } from "lucide-react";
+import { Loader2, Radar } from "lucide-react";
 
 export function SolutionAccuracy({
   loading,
@@ -62,11 +62,9 @@ export function SolutionAccuracy({
         <CardDescription>Measure correctness of your attempts</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 h-full">
-        {loading ? (
-          <div className="flex items-center justify-center h-full min-h-40">
-            <Loader2 className="animate-spin" size="40" />
-          </div>
-        ) : (
+        {attempts.accuracy !== 0 &&
+        attempts.correct !== 0 &&
+        attempts.incorrect !== 0 ? (
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square max-h-full"
@@ -123,35 +121,49 @@ export function SolutionAccuracy({
               </PolarRadiusAxis>
             </RadialBarChart>
           </ChartContainer>
+        ) : loading ? (
+          <div className="flex items-center justify-center h-full min-h-40">
+            <Loader2 className="animate-spin" size="40" />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 w-full justify-center items-center h-full min-h-60">
+            <Radar size="60" />
+            <span className="text-muted-foreground">
+              No data available for accuracy
+            </span>
+          </div>
         )}
       </CardContent>
-      {!loading && (
-        <CardFooter className="flex-col items-start">
-          <ul className="text-sm text-muted-foreground">
-            <li>
-              Accuracy:{" "}
-              <span className="text-foreground">
-                {Math.floor(
-                  (chartData[0].correct / chartData[0].questions) * 100 || 0
-                )}
-                %
-              </span>
-            </li>
-            <li>
-              Correct Answers:{" "}
-              <span className="text-foreground">
-                {chartData[0].correct || 0}
-              </span>
-            </li>
-            <li>
-              Incorrect Answers:{" "}
-              <span className="text-foreground">
-                {chartData[0].questions - chartData[0].correct || 0}
-              </span>
-            </li>
-          </ul>
-        </CardFooter>
-      )}
+      {!loading &&
+        attempts.accuracy !== 0 &&
+        attempts.correct !== 0 &&
+        attempts.incorrect !== 0 && (
+          <CardFooter className="flex-col items-start">
+            <ul className="text-sm text-muted-foreground">
+              <li>
+                Accuracy:{" "}
+                <span className="text-foreground">
+                  {Math.floor(
+                    (chartData[0].correct / chartData[0].questions) * 100 || 0
+                  )}
+                  %
+                </span>
+              </li>
+              <li>
+                Correct Answers:{" "}
+                <span className="text-foreground">
+                  {chartData[0].correct || 0}
+                </span>
+              </li>
+              <li>
+                Incorrect Answers:{" "}
+                <span className="text-foreground">
+                  {chartData[0].questions - chartData[0].correct || 0}
+                </span>
+              </li>
+            </ul>
+          </CardFooter>
+        )}
     </Card>
   );
 }

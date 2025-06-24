@@ -39,14 +39,14 @@ function Navbar() {
     >
       <div className="flex justify-between items-center sm:px-10 px-2 py-2 max-w-7xl mx-auto">
         <Drawer>
-          <DrawerTrigger asChild>
+          <DrawerTrigger className={`sm:hidden ${
+                location.includes("/appearing") ? "hidden" : ""
+              }
+              ${status !== "authenticated" ? "hidden" : ""}`} asChild>
             <Button
               variant="outline"
               size="icon"
-              className={`sm:hidden ${
-                location.includes("/appearing") ? "hidden" : ""
-              }
-              ${status !== "authenticated" ? "invisible" : ""}`}
+             
             >
               <Menu />
             </Button>
@@ -129,8 +129,8 @@ function Navbar() {
             </>
           ) : (
             <Dialog>
-              <DialogTrigger asChild>
-                <Button className="max-sm:hidden">Start Test</Button>
+              <DialogTrigger asChild className="max-sm:hidden">
+                <Button>Start Test</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>

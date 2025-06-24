@@ -73,7 +73,7 @@ export async function GET() {
       },
     ]);
 
-    if (!tests) {
+    if (!tests || tests.length === 0) {
       return NextResponse.json(
         {
           success: false,

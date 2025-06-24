@@ -111,16 +111,21 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async signIn({ profile }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "credentials") {
+        if (user.isVerified) {
+          return true;
+        } else return false;
+      }
+
       if (!profile?.email) return false;
 
       try {
         await dbConnect();
-        let user = await UserModel.findOne({ email: profile.email });
+        let existingUser = await UserModel.findOne({ email: profile.email });
 
-        console.log(profile);
-        if (!user) {
-          user = await UserModel.create({
+        if (!existingUser) {
+          existingUser = await UserModel.create({
             email: profile.email,
             fullName: profile.name,
             password: "google",
@@ -130,7 +135,7 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
-        if (user) return true;
+        if (existingUser) return true;
         else return false;
       } catch (error) {
         console.log(error);

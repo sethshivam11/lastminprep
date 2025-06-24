@@ -11,9 +11,6 @@ export async function GET(
   await dbConnect();
 
   try {
-    const searchParams = req.nextUrl.searchParams;
-    const details = searchParams.get("details");
-
     if (!testId) {
       return NextResponse.json(
         {
@@ -24,9 +21,7 @@ export async function GET(
       );
     }
 
-    const populateQuestions = details === "1" ? "-questions" : "";
-
-    const test = await TestModel.findById(testId, populateQuestions);
+    const test = await TestModel.findById(testId, "-questions");
     if (!test) {
       return NextResponse.json(
         {

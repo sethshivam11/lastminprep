@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/chart";
 import { useMemo } from "react";
 import { Difficulties } from "./DashboardAnalytics";
-import { Loader2 } from "lucide-react";
+import { ChartPie, Loader2 } from "lucide-react";
 
 const chartConfig = {
   easy: {
@@ -63,11 +63,7 @@ export function ChallengeDifficulty({
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0 h-full">
-        {loading ? (
-          <div className="flex items-center justify-center h-full min-h-40">
-            <Loader2 className="animate-spin" size="40" />
-          </div>
-        ) : (
+        {difficulties.length > 0 ? (
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square max-h-full"
@@ -116,9 +112,20 @@ export function ChallengeDifficulty({
               </Pie>
             </PieChart>
           </ChartContainer>
+        ) : loading ? (
+          <div className="flex items-center justify-center h-full min-h-40">
+            <Loader2 className="animate-spin" size="40" />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 w-full justify-center items-center h-full min-h-60">
+            <ChartPie size="60" />
+            <span className="text-muted-foreground">
+              No data available for difficulty
+            </span>
+          </div>
         )}
       </CardContent>
-      {!loading && (
+      {!loading && difficulties.length > 0 && (
         <CardFooter className="flex-col gap-1 items-start">
           <ul className="text-sm text-muted-foreground">
             <li>

@@ -150,7 +150,13 @@ export async function GET() {
       },
     ]);
 
-    if (!analytics || !analytics[0] || analytics.length === 0) {
+    if (
+      !analytics ||
+      !analytics[0] ||
+      analytics.length === 0 ||
+      !analytics[0]?.difficulties ||
+      analytics[0].difficulties.length === 0
+    ) {
       return NextResponse.json(
         {
           success: false,

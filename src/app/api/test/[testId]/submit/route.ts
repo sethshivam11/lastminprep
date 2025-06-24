@@ -60,11 +60,11 @@ export async function POST(
       );
     }
 
-    if (!test.questions || !test.questions.coding.length) {
+    if (!test.questions || test.questions.mcqs.length === 0) {
       return NextResponse.json(
         {
           success: false,
-          message: "Test does not have coding questions",
+          message: "Test does not have questions",
         },
         { status: 400 }
       );

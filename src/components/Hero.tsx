@@ -29,8 +29,29 @@ function Hero() {
                 </div>
                 <span className="text-xs">welcome.js</span>
               </div>
-              <CodeBlock
-                code={`// Welcome to LastMinPrep!
+              <div className="sm:hidden">
+                <CodeBlock
+                  code={`// Welcome to LastMinPrep!
+function greetDeveloper(name) {
+  console.log(\`Hello, \${name}!\`);
+  
+  const topics = [
+    "Arrays", "Strings", "Trees"
+  ];
+  
+  // Practice these key areas
+  topics.forEach((topic) => {
+    console.log(\`- \${topic}\`);
+  });
+  
+  return "You've got this! 💪";
+}`}
+                  language="javascript"
+                />
+              </div>
+              <div className="max-sm:hidden">
+                <CodeBlock
+                  code={`// Welcome to LastMinPrep!
 function greetDeveloper(name) {
   console.log(\`Hello, \${name}!\`);
   
@@ -43,8 +64,9 @@ function greetDeveloper(name) {
   
   return "You've got this! 💪";
 }`}
-                language="javascript"
-              />
+                  language="javascript"
+                />
+              </div>
             </div>
           </div>
         </div>

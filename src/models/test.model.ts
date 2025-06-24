@@ -13,8 +13,7 @@ export interface TestI extends Document {
   codingCount: number;
   jobDescription?: string;
   extraDescription?: string;
-  attempts: ObjectId[];
-  createdAt?: Date;
+  createdAt: Date;
 }
 
 export interface MCQI extends Document {
@@ -26,12 +25,9 @@ export interface MCQI extends Document {
 
 export interface CodingI extends Document {
   question: string;
-  expectedInputFormat: string;
-  expectedOutputFormat: string;
   constraints: string;
   exampleInput: string;
   exampleOutput: string;
-  code: string;
 }
 
 const MCQSchema: Schema<MCQI> = new Schema({
@@ -43,12 +39,9 @@ const MCQSchema: Schema<MCQI> = new Schema({
 
 const CodingSchema: Schema<CodingI> = new Schema({
   question: { type: String, required: true },
-  expectedInputFormat: { type: String },
-  expectedOutputFormat: { type: String },
   constraints: { type: String, default: "" },
   exampleInput: { type: String },
   exampleOutput: { type: String },
-  code: { type: String, default: "" },
 });
 
 const TestSchema: Schema<TestI> = new Schema({

@@ -9,7 +9,7 @@ function Actions() {
   const { status } = useSession();
 
   return (
-    <div className="flex flex-col gap-2 min-[400px]:flex-row">
+    <div className="flex flex-col gap-2 min-[400px]:flex-row w-full">
       {status === "authenticated" ? (
         <>
           <Button size="lg" asChild>

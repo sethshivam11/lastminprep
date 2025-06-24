@@ -246,9 +246,9 @@ export function TestTable() {
       }
       setLoading(false);
     };
-    if (data.length) return setLoading(false);
+    if (data.length > 0) return;
     getData();
-  }, [data]);
+  }, []);
 
   return (
     <div className="w-full">

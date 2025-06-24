@@ -21,8 +21,11 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center justify-between">
-        <Link className="flex items-center justify-center gap-2 mr-4" href="#">
+      <div className="flex h-14 items-center justify-between max-sm:px-2">
+        <Link
+          className="flex items-center justify-center gap-2 mr-4"
+          href={status === "authenticated" ? "/dashboard" : "/"}
+        >
           <Image src="/logo.svg" alt="Logo" width="30" height="30" />
           <span className="font-extrabold tracking-tighter text-xl">
             LastMinPrep

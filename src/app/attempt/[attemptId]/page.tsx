@@ -25,7 +25,14 @@ export default async function ResultsPage({
     data: attempt,
     success,
   }: {
-    data: AttemptI & { test: { _id: string; language: string } };
+    data: AttemptI & {
+      test: {
+        _id: string;
+        language: string;
+        codingCount: number;
+        mcqCount: number;
+      };
+    };
     success: boolean;
     message: string;
   } = await getAttempt(attemptId);
@@ -35,9 +42,9 @@ export default async function ResultsPage({
   }
 
   const mcqScore = attempt.mcqScore;
-  const totalMcqs = attempt.answers?.mcqs.length ?? 0;
-  const codingScore = attempt.codingScore;
-  const maxCodingScore = attempt.answers?.coding.length * 10;
+  const totalMcqs = attempt.test.mcqCount;
+  const codingScore = attempt.codingScore ?? 0;
+  const maxCodingScore = attempt.test.codingCount * 10;
 
   return (
     <div className="min-h-screen py-8">
@@ -57,25 +64,28 @@ export default async function ResultsPage({
                 </div>
               </CardContent>
             </Card>
-            <Card className="flex-1 min-w-[200px]">
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {codingScore}/{maxCodingScore}
+            {attempt.test.codingCount > 0 && (
+              <Card className="flex-1 min-w-[200px]">
+                <CardContent>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {codingScore}/{maxCodingScore}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Coding Score
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Coding Score
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
             <Card className="flex-1 min-w-[200px]">
               <CardContent>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">
                     {Math.round(
-                      (mcqScore / totalMcqs) * 50 +
-                        (codingScore / maxCodingScore) * 50
+                      ((mcqScore + codingScore) /
+                        (totalMcqs + maxCodingScore)) *
+                        100
                     )}
                     %
                   </div>

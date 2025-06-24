@@ -112,7 +112,7 @@ export function CorrectAnswers({
             <Loader2 className="animate-spin" size="40" />
           </div>
         ) : (
-          <div className="flex flex-col gap-2 w-full justify-center items-center h-full">
+          <div className="flex flex-col gap-2 w-full justify-center items-center h-full min-h-40">
             <ChartPie size="60" />
             <span className="text-muted-foreground">
               No data available for accuracy

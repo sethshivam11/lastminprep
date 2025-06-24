@@ -1,102 +1,85 @@
 "use client";
 
 import Guidelines from "@/components/Guidelines";
-import { useParams, useSearchParams } from "next/navigation";
+import { notFound, useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import TimerDialog from "@/components/TimerDialog";
-import { parseTestData } from "@/lib/helpers";
-import { useCompletion } from "@ai-sdk/react";
-import { getTest } from "@/services/tests";
-import { Loader2 } from "lucide-react";
+import { getQuestions } from "@/services/tests";
+import { Loader2, TriangleAlert } from "lucide-react";
 import TestForm from "@/components/TestForm";
+import GeneratingAnimation from "@/components/GeneratingAnimation";
 
 function Page() {
   const query = useSearchParams();
   const { testId } = useParams<{ testId: string }>();
-  const { completion, error, setCompletion, complete, isLoading } =
-    useCompletion({
-      api: `/api/test/${testId}/questions`,
-    });
-
-  const [isQuestionsPresent, setIsQuestionsPresent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [testDetails, setTestDetails] = useState({
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [test, setTest] = useState({
+    name: "",
+    user: "",
+    questions: {
+      mcqs: [],
+      coding: [],
+    },
     difficulty: "",
-    coding: "",
+    language: "",
     mcqCount: 0,
     codingCount: 0,
-    language: "",
+    jobDescription: "",
+    extraDescription: "",
   });
 
-  const { name, mcqs, coding } = parseTestData(completion, isQuestionsPresent);
-
-  const handleQuestionsPresent = async (testDetailsPresent: boolean = true) => {
-    const response = await getTest(testId);
-    if (response?.success) {
-      setIsQuestionsPresent(true);
-      setCompletion(JSON.stringify(response.data));
-      if (!testDetailsPresent) {
-        setTestDetails({
-          difficulty: response.data.difficulty,
-          coding: response.data.coding,
-          mcqCount: response.data.mcqCount,
-          codingCount: response.data.codingCount,
-          language: response.data.language,
-        });
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      const questionsPresent = query.get("questionsPresent");
+      if (questionsPresent !== "1") {
+        setLoading(false);
+        setGenerating(true);
+      }
+      const response = await getQuestions(testId);
+      if (response?.success) {
+        setTest(response.data);
+      } else {
+        setErrorMessage(
+          response?.message ||
+            `Failed to ${
+              questionsPresent ? "fetch" : "generate"
+            } test questions.`
+        );
       }
       setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    const questionsPresent = query.get("questionsPresent");
-    if (questionsPresent === "1") {
-      handleQuestionsPresent(false);
-    } else {
-      const test = localStorage.getItem(`test-${testId}`);
-      if (test) {
-        const parsedTest = JSON.parse(test);
-        setTestDetails(parsedTest);
-        setLoading(false);
-        complete("");
-      }
-    }
+      setGenerating(false);
+    };
+    if (test.questions.mcqs.length > 0 || generating)
+      return console.log(generating, test.questions.mcqs.length);
+    fetchQuestions();
   }, []);
 
-  useEffect(() => {
-    if (!error) return;
-    if (error instanceof Error) {
-      const response = JSON.parse(error.message) || {
-        message: "Something went wrong",
-      };
-      if (response.message === "Test already has questions") {
-        handleQuestionsPresent();
-      }
-      setLoading(false);
-    }
-  }, [error]);
+  if (errorMessage === "Test not found") {
+    notFound();
+  }
 
   return (
     <div className="flex flex-col gap-4 sm:p-10 p-4 max-w-5xl mx-auto min-h-screen">
       <Guidelines />
-      {completion.length > 0 && (
+      {test.questions.mcqs.length > 0 ? (
         <>
           <div className="flex justify-between items-center gap-2">
             <div className="space-y-4">
               <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
-                {name}
+                {test.name}
               </h1>
               <p className="text-sm text-muted-foreground">
-                This test has {testDetails.mcqCount} multiple choice questions
-                and {testDetails.codingCount} coding question
-                {testDetails.codingCount > 1 && "s"} in{" "}
+                This test has {test.mcqCount} multiple choice questions and{" "}
+                {test.codingCount} coding question
+                {test.codingCount > 1 && "s"} in{" "}
                 <span className="font-bold text-foreground capitalize">
-                  {testDetails.language}
+                  {test.language}
                 </span>{" "}
                 with{" "}
                 <span className="font-bold text-foreground capitalize">
-                  {testDetails.difficulty}
+                  {test.difficulty}
                 </span>{" "}
                 difficulty.
               </p>
@@ -104,21 +87,35 @@ function Page() {
             <TimerDialog />
           </div>
           <TestForm
-            isLoading={isLoading}
-            coding={coding}
-            mcqs={mcqs}
-            language={testDetails.language}
+            isLoading={loading}
+            coding={test.questions.coding}
+            mcqs={test.questions.mcqs}
+            language={test.language}
             testId={testId}
           />
         </>
-      )}
-      {loading && completion.length == 0 && (
+      ) : loading ? (
         <div className="flex flex-col justify-center items-center h-screen">
           <Loader2 className="animate-spin" size="40" />
-          <p className="text-muted-foreground text-sm mt-2">
-            Loading questions...
-          </p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
+      ) : errorMessage ? (
+        <div className="flex flex-col justify-center items-center h-screen">
+          <TriangleAlert size="60" />
+          <h3 className="text-xl font-bold tracking-tight mt-2">
+            Some Error Occured
+          </h3>
+          <p className="text-muted-foreground">{errorMessage}</p>
+        </div>
+      ) : (
+        generating && (
+          <GeneratingAnimation
+            language={test.language}
+            difficulty={test.difficulty}
+            mcqCount={test.mcqCount}
+            codingCount={test.codingCount}
+          />
+        )
       )}
     </div>
   );

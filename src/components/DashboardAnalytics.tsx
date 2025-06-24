@@ -36,6 +36,7 @@ function DashboardAnalytics() {
     async function fetchData() {
       const response = await testsAnalytics();
       if (response.success) {
+        console.log(response.data);
         setData(response.data);
       }
       setLoading(false);

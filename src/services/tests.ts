@@ -18,7 +18,7 @@ export const createTest = async (values: {
   }
 };
 
-export const getTest = async (testId: string, details = false) => {
+export const getTest = async (testId: string) => {
   if (!testId) {
     return {
       success: false,
@@ -28,8 +28,26 @@ export const getTest = async (testId: string, details = false) => {
   }
   try {
     const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
-    const { data } = await axios.get(
-      `${baseUrl}/api/test/${testId}${details ? "?details=1" : ""}`
+    const { data } = await axios.get(`${baseUrl}/api/test/${testId}`);
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getQuestions = async (testId: string) => {
+  if (!testId) {
+    return {
+      success: false,
+      data: null,
+      message: "Test ID is required",
+    };
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const { data } = await axios.post(
+      `${baseUrl}/api/test/${testId}/questions`
     );
     return data;
   } catch (error) {

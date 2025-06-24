@@ -122,11 +122,11 @@ export function ScoreTrends({
             </AreaChart>
           </ChartContainer>
         ) : loading ? (
-          <div className="flex items-center justify-center h-full min-h-40">
+          <div className="flex items-center justify-center h-60 min-h-60">
             <Loader2 className="animate-spin" size="40" />
           </div>
         ) : (
-          <div className="flex flex-col gap-2 w-full justify-center items-center h-full">
+          <div className="flex flex-col gap-2 w-full justify-center items-center h-full min-h-40">
             <ChartColumnDecreasing size="60" />
             <span className="text-muted-foreground">
               No data available for trends

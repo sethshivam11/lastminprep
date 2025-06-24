@@ -56,9 +56,6 @@ export function parseTestData(
 ): ParsedTest {
   if (!input) return { name: "", mcqs: [], coding: [] };
 
-  const mcqs: MCQQuestion[] = [];
-  const coding: CodingQuestion[] = [];
-
   try {
     if (isJSON) {
       const output = JSON.parse(input);
@@ -81,38 +78,11 @@ export function parseTestData(
   } catch (err) {
     console.warn("JSON parsing failed, falling back to regex...", err);
   }
-
-  const nameMatch = input.match(/"name"\s*:\s*"([^"]*)"/);
-  const name = nameMatch ? nameMatch[1] : "";
-
-  const mcqRegex =
-    /{\s*"question"\s*:\s*"((?:\\.|[^"\\])*)",\s*"code"\s*:\s*"((?:\\.|[^"\\])*)",\s*"options"\s*:\s*\[((?:(?:\s*"[^"]*"\s*,?)+))\],\s*"answer"\s*:\s*"([^"]*?)"\s*}/g;
-
-  let match;
-  while ((match = mcqRegex.exec(input))) {
-    const question = match[1].replace(/\\"/g, '"');
-    const code = match[2].replace(/\\n/g, "\n").replace(/\\"/g, '"');
-    const options = match[3]
-      .split(/,(?=\s*")/) // split only at commas between quoted strings
-      .map((opt) => opt.trim().replace(/^"|"$/g, ""));
-    const answer = match[4];
-
-    mcqs.push({ question, code, options, answer });
-  }
-
-  const codingRegex =
-    /{\s*"question"\s*:\s*"((?:\\.|[^"\\])*)",\s*"exampleInput"\s*:\s*"((?:\\.|[^"\\])*)",\s*"exampleOutput"\s*:\s*"((?:\\.|[^"\\])*)"(?:,\s*"constraints"\s*:\s*"((?:\\.|[^"\\])*)")?\s*}/g;
-
-  while ((match = codingRegex.exec(input))) {
-    const question = match[1].replace(/\\"/g, '"');
-    const exampleInput = match[2].replace(/\\n/g, "\n").replace(/\\"/g, '"');
-    const exampleOutput = match[3].replace(/\\n/g, "\n").replace(/\\"/g, '"');
-    const constraints = (match[4] || "").replace(/\\"/g, '"');
-
-    coding.push({ question, constraints, exampleInput, exampleOutput });
-  }
-
-  return { name, mcqs, coding };
+  return {
+    name: "",
+    mcqs: [],
+    coding: [],
+  };
 }
 
 export function handleRouteError(error: unknown) {

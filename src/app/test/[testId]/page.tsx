@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 async function Page({ params }: { params: Promise<{ testId: string }> }) {
   const { testId } = await params;
-  const test = await getTest(testId, true);
+  const test = await getTest(testId);
 
   if (!test || !test.success) {
     return notFound();

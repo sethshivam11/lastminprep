@@ -62,10 +62,6 @@ function Page() {
     setLoading(true);
     const response = await createTest(values);
     if (response.success) {
-      localStorage.setItem(
-        `test-${response.data._id}`,
-        JSON.stringify(response.data)
-      );
       router.push(`/test/${response.data._id}/appearing`);
       return;
     }

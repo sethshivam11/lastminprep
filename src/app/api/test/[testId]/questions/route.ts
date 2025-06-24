@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createMistral } from "@ai-sdk/mistral";
-import { streamText } from "ai";
+import { generateObject } from "ai";
 import dbConnect from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { UserI } from "@/models/user.model";
 import TestModel from "@/models/test.model";
 import { handleRouteError } from "@/lib/helpers";
+import { z } from "zod";
 
 const mistral = createMistral({
   apiKey: process.env.MISTRAL_API_KEY,
@@ -54,17 +55,14 @@ export async function POST(
       );
     }
 
-    if (
-      test.questions &&
-      (test.questions?.mcqs.length > 0 || test.questions?.coding.length > 0)
-    ) {
+    if (test.questions && test.questions?.mcqs.length > 0) {
       return NextResponse.json(
         {
-          success: false,
-          data: null,
+          success: true,
+          data: test,
           message: "Test already has questions",
         },
-        { status: 409 }
+        { status: 200 }
       );
     }
 
@@ -127,85 +125,64 @@ export async function POST(
 
     Return ONLY the JSON. No text before or after.`;
 
-    const result = streamText({
+    const { object } = await generateObject({
       model: mistral("mistral-small-latest"),
       prompt,
-      onFinish: async (data) => {
-        const json = JSON.parse(
-          data.text.toString().replaceAll("```", "").replace("json", "").trim()
-        );
-
-        const name = json.name;
-        const mcqs = json.mcqs;
-        const coding = json.coding;
-
-        if (!name || !mcqs || !coding) {
-          throw new Error("Something went wrong while generating test data");
-        }
-
-        await TestModel.findByIdAndUpdate(test._id, {
-          name,
-          questions: {
-            mcqs,
-            coding,
-          },
-        });
-      },
+      schema: z.object({
+        name: z.string(),
+        mcqs: z.array(
+          z.object({
+            question: z.string(),
+            code: z.string(),
+            options: z.array(z.string()),
+            answer: z.string(),
+          })
+        ),
+        coding: z.array(
+          z.object({
+            question: z.string(),
+            constraints: z.string().optional(),
+            exampleInput: z.string().optional(),
+            exampleOutput: z.string().optional(),
+          })
+        ),
+      }),
     });
 
-    return result.toDataStreamResponse();
-  } catch (error) {
-    return handleRouteError(error);
-  }
-}
+    if (!object || !object.mcqs) {
+      return NextResponse.json(
+        {
+          success: false,
+          data: object,
+          message: "Failed to generate valid response",
+        },
+        { status: 400 }
+      );
+    }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ testId: string }> }
-) {
-  const { testId } = await params;
-  await dbConnect();
+    await test.updateOne({
+      questions: {
+        mcqs: object.mcqs,
+        coding: object.coding,
+      },
+      name: object.name,
+    });
 
-  const session = await getServerSession(authOptions);
-  const user: UserI = session?.user as UserI;
-
-  if (!session || !session?.user) {
-    return Response.json(
+    return NextResponse.json(
       {
-        success: false,
-        message: "Not Authenticated",
+        success: true,
+        data: {
+          ...test.toObject(),
+          questions: {
+            mcqs: object.mcqs,
+            coding: object.coding,
+          },
+          name: object.name,
+        },
+        message: "Test questions generated successfully",
       },
-      { status: 401 }
+      { status: 200 }
     );
-  }
-
-  try {
-    const test = await TestModel.findById(testId);
-    if (!test) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Test not found",
-        },
-        { status: 404 }
-      );
-    }
-
-    if (test.user.toString() !== (user._id as string).toString()) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "You are not authorized to access this test",
-        },
-        { status: 403 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: test,
-      message: "Test data fetched successfully",
-    });
   } catch (error) {
     return handleRouteError(error);
   }

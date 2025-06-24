@@ -15,7 +15,7 @@ export async function GET(
     const attempt = await AttemptModel.findById(attemptId).populate({
       model: "test",
       path: "test",
-      select: "language",
+      select: "language mcqCount codingCount",
       strictPopulate: false,
     });
     if (!attempt) {

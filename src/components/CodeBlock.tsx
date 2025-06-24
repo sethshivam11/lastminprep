@@ -6,6 +6,9 @@ import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-python";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-sql"
 
 function CodeBlock({ code, language }: { code: string; language: string }) {
   const decodedCode = code.replace(/\\n/g, "\n").replace(/\\"/g, '"');

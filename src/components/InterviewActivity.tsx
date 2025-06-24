@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
 import { attemptsAnalytics } from "@/services/attempt";
-import { Loader2 } from "lucide-react";
+import { ChartColumnDecreasing, Loader2 } from "lucide-react";
 
 const chartConfig = {
   count: {
@@ -54,15 +54,10 @@ export function InterviewActivity({ className }: { className?: string }) {
         <CardTitle>Interview Activity</CardTitle>
         <CardDescription>
           Daily breakdown of interviews you&apos;ve attempted
-          <button onClick={() => console.log(data)}>print</button>
         </CardDescription>
       </CardHeader>
       <CardContent className="h-full items-end">
-        {loading ? (
-          <div className="flex items-center justify-center h-full min-h-40">
-            <Loader2 className="animate-spin" size="40" />
-          </div>
-        ) : (
+        {data.length > 0 ? (
           <ChartContainer config={chartConfig}>
             <BarChart accessibilityLayer data={chartData}>
               <CartesianGrid vertical={false} />
@@ -80,6 +75,17 @@ export function InterviewActivity({ className }: { className?: string }) {
               <Bar dataKey="count" fill="var(--color-count)" radius={8} />
             </BarChart>
           </ChartContainer>
+        ) : loading ? (
+          <div className="flex items-center justify-center h-full min-h-40">
+            <Loader2 className="animate-spin" size="40" />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 w-full justify-center items-center h-full min-h-60">
+            <ChartColumnDecreasing size="60" />
+            <span className="text-muted-foreground">
+              No data available for activity
+            </span>
+          </div>
         )}
       </CardContent>
     </Card>
