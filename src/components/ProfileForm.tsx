@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +16,7 @@ import { fullNameSchema } from "@/schemas/userSchema";
 import {
   bioSchema,
   birthdaySchema,
+  genderSchema,
   githubSchema,
   linkedinSchema,
   locationSchema,
@@ -34,7 +35,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Country, State, City } from "country-state-city";
-import { Globe } from "lucide-react";
+import { Globe, Loader2 } from "lucide-react";
 import AvatarInput from "./AvatarInput";
 import { useSession } from "next-auth/react";
 import InputTags from "./ui/input-tags";
@@ -45,13 +46,17 @@ import XIcon from "./icons/X";
 import { updateProfile } from "@/services/profile";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ProfileProps } from "@/app/profile/page";
 
-function ProfileForm() {
+function ProfileForm({ profile }: { profile: ProfileProps }) {
   const { data } = useSession();
   const router = useRouter();
 
+  const [submitting, setSubmitting] = useState(false);
+
   const formSchema = z.object({
     fullName: fullNameSchema,
+    gender: genderSchema,
     birthday: birthdaySchema,
     location: locationSchema,
     bio: bioSchema,
@@ -66,32 +71,35 @@ function ProfileForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
-      birthday: new Date(),
-      location: "",
-      website: "",
-      github: "",
-      x: "",
-      linkedin: "",
-      bio: "",
-      skills: [],
+      gender: profile.gender || "prefer not to say",
+      birthday: profile.birthday ? new Date(profile.birthday) : new Date(),
+      location: profile.location || "",
+      bio: profile.bio || "",
+      skills: profile.skills || [],
+      website: profile.social.website || "",
+      github: profile.social.github || "",
+      x: profile.social.x || "",
+      linkedin: profile.social.linkedin || "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setSubmitting(true);
     const response = await updateProfile(values);
     if (response.success) {
       toast.success("Profile updated successfully!");
       form.reset();
-      router.push(`/${response.data._id}`);
+      router.push(`/profile/${response.data._id}`);
     } else {
       toast.error(response.message);
     }
+    setSubmitting(false);
   }
 
   useEffect(() => {
     if (!data?.user.fullName) return;
     form.setValue("fullName", data.user.fullName);
-  }, [data?.user]);
+  }, [data]);
 
   return (
     <Form {...form}>
@@ -99,19 +107,54 @@ function ProfileForm() {
         <div className="flex max-md:flex-col items-center justify-center gap-4">
           <AvatarInput />
           <div className="space-y-8 w-full">
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid sm:grid-cols-3 gap-2">
+              <FormField
+                control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Gender</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full capitalize">
+                          <SelectValue placeholder="Select your gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["male", "female", "others", "prefer not to say"].map(
+                            (item, index) => (
+                              <SelectItem
+                                key={index}
+                                value={item}
+                                className="capitalize"
+                              >
+                                {item}
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="birthday"
@@ -121,7 +164,9 @@ function ProfileForm() {
                   <FormControl>
                     <div className="grid grid-cols-3 gap-2">
                       <Select
-                        value={field.value.getDate().toString()}
+                        value={
+                          field.value ? field.value.getDate().toString() : ""
+                        }
                         onValueChange={(value) => {
                           const newDate = new Date(field.value);
                           newDate.setDate(parseInt(value));
@@ -141,7 +186,9 @@ function ProfileForm() {
                         </SelectContent>
                       </Select>
                       <Select
-                        value={field.value.getMonth().toString()}
+                        value={
+                          field.value ? field.value.getMonth().toString() : ""
+                        }
                         onValueChange={(value) => {
                           const newDate = new Date(field.value);
                           newDate.setMonth(parseInt(value));
@@ -160,7 +207,11 @@ function ProfileForm() {
                         </SelectContent>
                       </Select>
                       <Select
-                        value={field.value.getFullYear().toString()}
+                        value={
+                          field.value
+                            ? field.value.getFullYear().toString()
+                            : ""
+                        }
                         onValueChange={(value) => {
                           const newDate = new Date(field.value);
                           newDate.setFullYear(parseInt(value));
@@ -206,7 +257,7 @@ function ProfileForm() {
                         name={field.name}
                       >
                         <SelectTrigger id="location" className="w-full">
-                          <SelectValue placeholder="Select your country" />
+                          <SelectValue placeholder="Country" />
                         </SelectTrigger>
                         <SelectContent>
                           {Country.getAllCountries().map((country) => (
@@ -228,7 +279,7 @@ function ProfileForm() {
                         }}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select your state" />
+                          <SelectValue placeholder="State" />
                         </SelectTrigger>
                         <SelectContent>
                           {State.getStatesOfCountry(
@@ -266,7 +317,7 @@ function ProfileForm() {
                         }}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select your city" />
+                          <SelectValue placeholder="City" />
                         </SelectTrigger>
                         <SelectContent>
                           {City.getCitiesOfState(
@@ -332,69 +383,75 @@ function ProfileForm() {
           <h1 className="text-2xl font-bold tracking-tight">Socials</h1>
           <Separator />
         </div>
-        <FormField
-          control={form.control}
-          name="website"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <Globe size="18" /> Website
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your website" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="github"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <Github />
-                GitHub
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your github" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="linkedin"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <Linkedin /> LinkedIn
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your linkedin" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="x"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <XIcon /> X / Twitter
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your X" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full">
-          Save
+        <div className="grid sm:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <Globe size="18" /> Website
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your website" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="github"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <Github />
+                  GitHub
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your github" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="linkedin"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <Linkedin /> LinkedIn
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your linkedin" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="x"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <XIcon /> X / Twitter
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your X" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={submitting || !form.formState.isValid}
+        >
+          {submitting ? <Loader2 className="animate-spin" /> : "Save"}
         </Button>
       </form>
     </Form>

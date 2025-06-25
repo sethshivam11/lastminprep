@@ -114,6 +114,7 @@ function Page() {
             difficulty={test.difficulty}
             mcqCount={test.mcqCount}
             codingCount={test.codingCount}
+            completed={!generating}
           />
         )
       )}

@@ -26,7 +26,7 @@ const chartData = [
 const chartConfig = {
   score: {
     label: "Score",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 

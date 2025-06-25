@@ -4,10 +4,11 @@ import ProfileModel from "@/models/profile.model";
 import UserModel from "@/models/user.model";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../../auth/[...nextauth]/options";
 
 export async function POST(req: NextRequest) {
   await dbConnect();
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   const user = session?.user;
 
   if (!session || !user) {

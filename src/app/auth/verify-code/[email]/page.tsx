@@ -135,20 +135,6 @@ const Page = ({ params }: { params: Promise<{ email: string }> }) => {
           </CardTitle>
           <CardDescription className="text-center">
             Enter the OTP sent to your email address to verify your account
-            <Button
-              onClick={() => {
-                console.log(
-                  decodeURIComponent(
-                    document.cookie
-                      .split("; ")
-                      .find((row) => row.startsWith("temp-signup"))
-                      ?.split("=")[1] || ""
-                  )
-                );
-              }}
-            >
-              Log
-            </Button>
           </CardDescription>
         </CardHeader>
         <CardContent className="pb-0">

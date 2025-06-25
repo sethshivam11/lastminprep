@@ -8,11 +8,13 @@ export default function GeneratingAnimation({
   difficulty,
   mcqCount,
   codingCount,
+  completed,
 }: {
   language: string;
   difficulty: string;
   mcqCount: number;
   codingCount: number;
+  completed: boolean;
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -43,33 +45,51 @@ export default function GeneratingAnimation({
 
   const steps = allSteps.filter((step) => step.condition !== false);
 
+  // Estimate total generation time (ms)
+  const estimatedTime = mcqCount * 500 + codingCount * 2000 + 2000; // +2s buffer for setup/finalize
+
+  const progressIntervalMs = 100; // how often we update
+  const progressStep = (progressIntervalMs / estimatedTime) * 100;
+
   useEffect(() => {
+    if (completed) {
+      setProgress(100);
+      return;
+    }
+
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           return 100;
         }
-        return prev + 2;
+        return prev + progressStep;
       });
-    }, 60);
+    }, progressIntervalMs);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [completed, estimatedTime]);
 
   useEffect(() => {
-    const stepInterval = setInterval(() => {
+    if (completed) {
+      setCurrentStep(steps.length - 1);
+      return;
+    }
+
+    const stepInterval = estimatedTime / steps.length;
+
+    const interval = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev < steps.length - 1) {
           return prev + 1;
         }
-        clearInterval(stepInterval);
+        clearInterval(interval);
         return prev;
       });
-    }, 750);
+    }, stepInterval);
 
-    return () => clearInterval(stepInterval);
-  }, []);
+    return () => clearInterval(interval);
+  }, [completed, estimatedTime, steps.length]);
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">

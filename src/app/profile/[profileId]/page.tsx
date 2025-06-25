@@ -13,6 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ProfileI } from "@/models/profile.model";
+import { getProfile } from "@/services/profile";
 import { Country } from "country-state-city";
 import {
   Award,
@@ -24,25 +26,38 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import React from "react";
 
-function Page() {
-  const user = {
-    avatar:
-      "https://res.cloudinary.com/dv3qbj0bn/image/upload/v1741416419/lastminprep/qnzy9jiix6hyfrr4cddx.png",
-    fullName: "John Doe",
-    birthday: new Date(),
-    location: "IN, UP, Lucknow",
-    gender: "male",
-    social: {
-      website: "https://example.com",
-      x: "https://x.com/example",
-      linkedin: "https://linkedin.com/in/example",
-      github: "https://github.com/example",
-    },
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    skills: ["HTML", "CSS", "JavaScript", "React", "Node.js"],
-  };
+async function Page({ params }: { params: Promise<{ profileId: string }> }) {
+  const { profileId } = await params;
+  const response: {
+    success: boolean;
+    data: ProfileI & { user: { fullName: string; avatar: string } };
+  } = await getProfile(profileId);
+
+  if (!response?.success) {
+    return notFound();
+  }
+
+  const profile = response.data;
+
+  // const user = {
+  //   avatar:
+  //     "https://res.cloudinary.com/dv3qbj0bn/image/upload/v1741416419/lastminprep/qnzy9jiix6hyfrr4cddx.png",
+  //   fullName: "John Doe",
+  //   birthday: new Date(),
+  //   location: "IN, UP, Lucknow",
+  //   gender: "other",
+  //   social: {
+  //     website: "https://example.com",
+  //     x: "https://x.com/example",
+  //     linkedin: "https://linkedin.com/in/example",
+  //     github: "https://github.com/example",
+  //   },
+  //   bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  //   skills: ["HTML", "CSS", "JavaScript", "React", "Node.js"],
+  // };
   const analytics = [
     {
       title: "Total Interviews",
@@ -102,74 +117,84 @@ function Page() {
   return (
     <div className="flex flex-col sm:gap-10 gap-4 sm:p-10 p-4 max-w-7xl mx-auto min-h-screen">
       <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-4">
-        <Card className="flex flex-col items-center p-4 pt-0 border-input rounded-lg">
-          <CardHeader>
+        <Card className="flex flex-col items-center p-4 border-input rounded-lg sm:top-16 sm:sticky h-fit">
+          <CardHeader className="w-full">
             <Image
-              src={user.avatar}
-              alt={user.fullName + "'s image"}
+              src={profile.user.avatar}
+              alt={profile.user.fullName + "'s image"}
               width="200"
               height="200"
-              className="w-full select-none"
+              className="w-full select-none rounded-full"
               draggable={false}
             />
-            <CardTitle className="lg:text-4xl sm:text-3xl text-2xl tracking-tight font-bold">
-              {user.fullName}
+            <CardTitle className="xl:text-4xl sm:text-3xl text-2xl tracking-tight font-bold">
+              {profile.user.fullName}
             </CardTitle>
             <p className="text-muted-foreground">
-              {user.gender === "male"
+              {profile.gender === "male"
                 ? "he/him"
-                : user.gender === "female"
+                : profile.gender === "female"
                 ? "she/her"
-                : "they/them"}
+                : profile.gender === "others"
+                ? "they/them"
+                : ""}
             </p>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">{user.bio}</p>
+          <CardContent className="w-full">
+            <p className="text-muted-foreground">{profile.bio}</p>
             <p className="text-muted-foreground flex items-center gap-1 mt-2">
               <MapPin size="16" />
-              {Country.getCountryByCode(user.location.split(",")[0])?.name}
+              {Country.getCountryByCode(profile.location.split(",")[0])?.name}
             </p>
-            <Link
-              href={user.social.website}
-              className="text-muted-foreground flex items-center gap-1 mt-2"
-            >
-              <LinkIcon size="16" />
-              <span className="hover:text-blue-500 hover:underline">
-                {user.social.website}
-              </span>
-            </Link>
-            <Link
-              href={user.social.github}
-              className="text-muted-foreground flex items-center gap-1 mt-2"
-            >
-              <GithubIcon />
-              <span className="hover:text-blue-500 hover:underline">
-                {user.social.github.split("github.com")[1]}
-              </span>
-            </Link>
-            <Link
-              href={user.social.x}
-              className="text-muted-foreground flex items-center gap-1 mt-2"
-            >
-              <XIcon />
-              <span className="hover:text-blue-500 hover:underline">
-                @{user.social.x.split("x.com/")[1]}
-              </span>
-            </Link>
-            <Link
-              href={user.social.linkedin}
-              className="text-muted-foreground flex items-center gap-1 mt-2"
-            >
-              <LinkedinIcon />
-              <span className="hover:text-blue-500 hover:underline">
-                {user.social.linkedin.split("linkedin.com")[1]}
-              </span>
-            </Link>
+            {profile.social?.website && (
+              <Link
+                href={profile.social?.website}
+                className="text-muted-foreground flex items-center gap-1 mt-2"
+              >
+                <LinkIcon size="16" />
+                <span className="hover:text-blue-500 hover:underline">
+                  {profile.social?.website}
+                </span>
+              </Link>
+            )}
+            {profile.social?.github && (
+              <Link
+                href={profile.social?.github}
+                className="text-muted-foreground flex items-center gap-1 mt-2"
+              >
+                <GithubIcon />
+                <span className="hover:text-blue-500 hover:underline">
+                  {profile.social?.github.split("github.com")[1]}
+                </span>
+              </Link>
+            )}
+            {profile.social?.x && (
+              <Link
+                href={profile.social?.x}
+                className="text-muted-foreground flex items-center gap-1 mt-2"
+              >
+                <XIcon />
+                <span className="hover:text-blue-500 hover:underline">
+                  @{profile.social?.x.split("x.com/")[1]}
+                </span>
+              </Link>
+            )}
+            {profile.social?.linkedin && (
+              <Link
+                href={profile.social?.linkedin}
+                className="text-muted-foreground flex items-center gap-1 mt-2"
+              >
+                <LinkedinIcon />
+                <span className="hover:text-blue-500 hover:underline">
+                  {profile.social?.linkedin.split("linkedin.com")[1]}
+                </span>
+              </Link>
+            )}
           </CardContent>
           <CardFooter className="w-full">
             <div className="flex flex-col gap-2 w-full">
               <div className="flex gap-2 flex-wrap">
-                {user.skills.map((skill, index) => (
+                {profile.skills.map((skill, index) => (
                   <Link
                     href={"https://google.com/search?q=" + skill}
                     target="_blank"

@@ -12,6 +12,10 @@ const birthdaySchema = z.date().refine(
 
 const locationSchema = z.string();
 
+const genderSchema = z.enum(["male", "female", "others", "prefer not to say"], {
+  message: "Invalid gender",
+});
+
 const bioSchema = z
   .string()
   .min(10, {
@@ -94,6 +98,7 @@ const skillsSchema = z
 
 export {
   birthdaySchema,
+  genderSchema,
   locationSchema,
   bioSchema,
   websiteSchema,
