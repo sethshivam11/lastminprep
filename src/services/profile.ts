@@ -41,3 +41,83 @@ export const getUserProfile = async () => {
     return handleError(error);
   }
 };
+
+export const getProfileActivity = async (profileId: string) => {
+  if (!profileId) {
+    return {
+      data: null,
+      success: false,
+      message: "Profile ID is required",
+    };
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const { data } = await axios.get(
+      `${baseUrl}/api/profile/${profileId}/activity`
+    );
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getProfileAnalytics = async (profileId: string) => {
+  if (!profileId) {
+    return {
+      data: null,
+      success: false,
+      message: "Profile ID is required",
+    };
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const { data } = await axios.get(
+      `${baseUrl}/api/profile/${profileId}/analytics`
+    );
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getProfilePerformance = async (profileId: string) => {
+  if (!profileId) {
+    return {
+      data: null,
+      success: false,
+      message: "Profile ID is required",
+    };
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const { data } = await axios.get(
+      `${baseUrl}/api/profile/${profileId}/performance`
+    );
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const getProfileSessions = async (profileId: string) => {
+  if (!profileId) {
+    return {
+      success: false,
+      data: null,
+      message: "Profile ID is required",
+    };
+  }
+
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const { data } = await axios.get(
+      `${baseUrl}/api/profile/${profileId}/sessions`
+    );
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};

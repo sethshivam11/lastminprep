@@ -17,6 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { attemptsAnalytics } from "@/services/attempt";
 import { ChartColumnDecreasing, Loader2 } from "lucide-react";
+import { getProfileActivity } from "@/services/profile";
 
 const chartConfig = {
   count: {
@@ -31,13 +32,30 @@ interface Data {
   date: string;
 }
 
-export function InterviewActivity({ className }: { className?: string }) {
+export function InterviewActivity({
+  className,
+  profileId,
+}: {
+  className?: string;
+  profileId?: string;
+}) {
   const [data, setData] = useState<Data[]>([]);
   const [loading, setLoading] = useState(true);
   const chartData = data;
 
   useEffect(() => {
+    async function fetchProfileActivity() {
+      if (!profileId) return setLoading(false);
+      const response = await getProfileActivity(profileId);
+      if (response.success) {
+        setData(response.data);
+      }
+      setLoading(false);
+    }
     async function fetchData() {
+      if (profileId) {
+        return fetchProfileActivity();
+      }
       const response = await attemptsAnalytics();
       if (response.success) {
         setData(response.data);
@@ -46,7 +64,7 @@ export function InterviewActivity({ className }: { className?: string }) {
     }
     if (data.length > 0) return setLoading(false);
     fetchData();
-  }, [data]);
+  }, [profileId]);
 
   return (
     <Card className={className}>

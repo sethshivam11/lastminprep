@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
       fullName,
       birthday,
       location,
+      gender,
       bio,
       skills,
       website,
@@ -84,6 +85,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      existingProfile.gender = gender;
       existingProfile.birthday = birthday;
       existingProfile.location = location;
       existingProfile.bio = bio;
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
       birthday,
       location,
       bio,
+      gender,
       skills,
       social: {
         website,

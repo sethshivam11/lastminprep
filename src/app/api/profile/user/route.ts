@@ -1,11 +1,11 @@
 import dbConnect from "@/lib/db";
 import { handleRouteError } from "@/lib/helpers";
 import ProfileModel from "@/models/profile.model";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   await dbConnect();
 
   const session = await getServerSession(authOptions);

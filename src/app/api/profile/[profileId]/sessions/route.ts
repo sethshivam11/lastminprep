@@ -1,10 +1,10 @@
 import dbConnect from "@/lib/db";
 import { handleRouteError } from "@/lib/helpers";
-import AttemptModel from "@/models/attempt.model";
 import ProfileModel from "@/models/profile.model";
+import TestModel from "@/models/test.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(  
+export async function GET(
   _: NextRequest,
   { params }: { params: Promise<{ profileId: string }> }
 ) {
@@ -21,7 +21,6 @@ export async function GET(
   }
 
   await dbConnect();
-
   try {
     const profile = await ProfileModel.findById(profileId);
     if (!profile) {
@@ -31,62 +30,71 @@ export async function GET(
       );
     }
 
-    const analytics = await AttemptModel.aggregate([
+    const sessions = await TestModel.aggregate([
       {
         $match: {
           user: profile.user,
         },
       },
       {
-        $addFields: {
-          totalQuestionsPerAttempt: {
-            $add: [{ $size: "$answers.mcqs" }, { $size: "$answers.coding" }],
-          },
-          isCompleted: {
-            $gt: [
-              {
-                $add: [
-                  { $size: "$answers.mcqs" },
-                  { $size: "$answers.coding" },
-                ],
-              },
-              0,
-            ],
-          },
+        $sort: {
+          createdAt: -1,
         },
       },
       {
-        $group: {
-          _id: null,
-          totalInterviews: { $sum: 1 },
-          averageScore: { $avg: "$totalScore" },
-          totalQuestions: { $sum: "$totalQuestionsPerAttempt" },
-          completedCount: {
-            $sum: { $cond: ["$isCompleted", 1, 0] },
-          },
+        $limit: 5,
+      },
+      {
+        $lookup: {
+          from: "attempts",
+          let: { testId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$test", "$$testId"],
+                },
+              },
+            },
+            {
+              $sort: {
+                createdAt: -1,
+              },
+            },
+            {
+              $limit: 1,
+            },
+            {
+              $project: {
+                totalScore: 1,
+              },
+            },
+          ],
+          as: "latestAttempt",
         },
       },
       {
         $project: {
           _id: 0,
-          totalInterviews: 1,
-          averageScore: { $round: ["$averageScore", 2] },
-          totalQuestions: 1,
-          completionRate: {
-            $round: [
-              {
-                $multiply: [
-                  { $divide: ["$completedCount", "$totalInterviews"] },
-                  100,
-                ],
-              },
-              2,
-            ],
+          title: "$name",
+          createdAt: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$createdAt",
+            },
+          },
+          score: {
+            $cond: {
+              if: { $gt: [{ $size: "$latestAttempt" }, 0] },
+              then: { $arrayElemAt: ["$latestAttempt.totalScore", 0] },
+              else: "N/A",
+            },
           },
         },
       },
     ]);
-    if (!analytics || analytics.length === 0) {
+
+    if (!sessions || sessions.length === 0) {
       return NextResponse.json(
         { success: false, data: null, message: "No analytics found" },
         { status: 404 }
@@ -96,7 +104,7 @@ export async function GET(
     return NextResponse.json(
       {
         success: true,
-        data: analytics[0],
+        data: sessions,
         message: "Analytics found successfully",
       },
       { status: 200 }

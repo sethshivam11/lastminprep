@@ -4,7 +4,7 @@ import AttemptModel from "@/models/attempt.model";
 import ProfileModel from "@/models/profile.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(  
+export async function GET(
   _: NextRequest,
   { params }: { params: Promise<{ profileId: string }> }
 ) {
@@ -31,7 +31,7 @@ export async function GET(
       );
     }
 
-    const analytics = await AttemptModel.aggregate([
+    const performance = await AttemptModel.aggregate([
       {
         $match: {
           user: profile.user,
@@ -39,54 +39,32 @@ export async function GET(
       },
       {
         $addFields: {
-          totalQuestionsPerAttempt: {
-            $add: [{ $size: "$answers.mcqs" }, { $size: "$answers.coding" }],
-          },
-          isCompleted: {
-            $gt: [
-              {
-                $add: [
-                  { $size: "$answers.mcqs" },
-                  { $size: "$answers.coding" },
-                ],
-              },
-              0,
-            ],
+          date: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
           },
         },
       },
       {
         $group: {
-          _id: null,
-          totalInterviews: { $sum: 1 },
+          _id: "$date",
           averageScore: { $avg: "$totalScore" },
-          totalQuestions: { $sum: "$totalQuestionsPerAttempt" },
-          completedCount: {
-            $sum: { $cond: ["$isCompleted", 1, 0] },
-          },
+          score: { $sum: 1 },
         },
       },
       {
         $project: {
           _id: 0,
-          totalInterviews: 1,
+          date: "$_id",
           averageScore: { $round: ["$averageScore", 2] },
-          totalQuestions: 1,
-          completionRate: {
-            $round: [
-              {
-                $multiply: [
-                  { $divide: ["$completedCount", "$totalInterviews"] },
-                  100,
-                ],
-              },
-              2,
-            ],
-          },
+          score: 1,
         },
       },
+      {
+        $sort: { date: 1 },
+      },
     ]);
-    if (!analytics || analytics.length === 0) {
+
+    if (!performance || performance.length === 0) {
       return NextResponse.json(
         { success: false, data: null, message: "No analytics found" },
         { status: 404 }
@@ -96,7 +74,7 @@ export async function GET(
     return NextResponse.json(
       {
         success: true,
-        data: analytics[0],
+        data: performance,
         message: "Analytics found successfully",
       },
       { status: 200 }
