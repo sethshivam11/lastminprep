@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token._id = user._id?.toString();
         token.isVerified = user.isVerified;
@@ -89,6 +89,19 @@ export const authOptions: NextAuthOptions = {
         token.avatar = user.avatar;
         token.fullName = user.fullName;
       }
+
+      if (trigger === "update") {
+        await dbConnect();
+        const existingUser = await UserModel.findOne({ email: token.email });
+        if (existingUser) {
+          token._id = existingUser._id?.toString();
+          token.isVerified = existingUser.isVerified;
+          token.email = existingUser.email;
+          token.avatar = existingUser.avatar;
+          token.fullName = existingUser.fullName;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -106,7 +119,7 @@ export const authOptions: NextAuthOptions = {
         session.user._id = token._id?.toString() || "";
         session.user.isVerified = token.isVerified as boolean;
         session.user.email = token.email || "";
-        session.user.avatar = (token.avatar as string) || token.picture || "";
+        session.user.avatar = (token.avatar as string) || "";
         session.user.fullName = (token.fullName as string) || token.name || "";
       }
       return session;
@@ -128,14 +141,15 @@ export const authOptions: NextAuthOptions = {
           existingUser = await UserModel.create({
             email: profile.email,
             fullName: profile.name,
-            password: "google",
+            password: account?.provider,
             avatar: "picture" in profile ? profile.picture : profile.image,
             isVerified: true,
-            loginType: "google",
+            loginType: account?.provider,
           });
         }
 
-        if (existingUser) return true;
+        if (existingUser && existingUser.loginType === account?.provider)
+          return true;
         else return false;
       } catch (error) {
         console.log(error);

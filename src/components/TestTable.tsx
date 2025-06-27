@@ -252,7 +252,7 @@ export function TestTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-4 pb-4">
+      <div className="flex max-sm:flex-col sm:items-center gap-4 pb-4">
         <Input
           placeholder="Search tests..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -260,25 +260,28 @@ export function TestTable() {
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           name="test-search"
-          className="max-w-sm"
+          className="sm:max-w-sm max-sm:w-full"
         />
-        <Filters
-          filters={filters}
-          setFilters={setFilters}
-          initialFilters={initialFilters}
-          setIsFiltered={setIsFiltered}
-        />
-        {isFiltered && (
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setFilters(initialFilters);
-              setIsFiltered(false);
-            }}
-          >
-            Clear all
-          </Button>
-        )}
+        <div className="grid grid-cols-2 gap-2">
+          <Filters
+            filters={filters}
+            setFilters={setFilters}
+            initialFilters={initialFilters}
+            setIsFiltered={setIsFiltered}
+          />
+          {isFiltered && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setFilters(initialFilters);
+                setIsFiltered(false);
+              }}
+            >
+              Clear all
+            </Button>
+          )}
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

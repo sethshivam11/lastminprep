@@ -11,8 +11,13 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
-        pathname: "/**"
-      }
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.buymeacoffee.com",
+        pathname: "/buttons/v2/default-yellow.png",
+      },
     ],
   },
 };

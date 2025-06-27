@@ -44,6 +44,8 @@ export async function POST(req: NextRequest) {
     }
 
     user.isVerified = true;
+    user.verifyCode = "";
+    user.codeExpiry = new Date();
     await user.save();
 
     const token = jwt.sign(

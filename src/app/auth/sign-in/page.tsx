@@ -116,20 +116,20 @@ const Page = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <div className="flex w-full items-center space-x-2 rounded-lg relative overflow-hidden border border-input pr-2 group focus-within:ring-ring shadow-sm focus-within:ring-1">
+                    <div className="flex w-full items-center relative group">
                       <FormControl>
                         <Input
                           autoComplete="current-password"
                           type={showPwd ? "text" : "password"}
                           placeholder="Enter your password"
-                          className="w-full border-0 focus-visible:ring-0"
+                          className="pr-8"
                           {...field}
                         />
                       </FormControl>
                       <button
                         type="button"
                         onClick={() => setShowPwd((prev) => !prev)}
-                        className="text-muted group-focus-within:text-muted-foreground"
+                        className="text-muted group-focus-within:text-muted-foreground absolute right-0 p-2"
                       >
                         {showPwd ? <EyeOff size="20" /> : <Eye size="20" />}
                       </button>
@@ -153,7 +153,12 @@ const Page = () => {
                     "Sign In"
                   )}
                 </Button>
-                <Button variant="outline" type="button" className="w-full" asChild>
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="w-full"
+                  asChild
+                >
                   <Link href="/auth/options">Try another way</Link>
                 </Button>
                 <p>

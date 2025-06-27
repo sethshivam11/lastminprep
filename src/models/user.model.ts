@@ -8,10 +8,22 @@ export interface UserI extends Document {
   isVerified: boolean;
   verifyCode: string;
   codeExpiry: Date;
+  limits: {
+    daily: number;
+    weekly: number;
+    monthly: number;
+  };
+  usage: {
+    generations: Date[];
+    submissions: Date[];
+  };
   profile: ObjectId;
   loginType: "email" | "google" | "github";
   createdAt: Date;
 }
+
+export const DEFAULT_USER_AVATAR =
+  "https://res.cloudinary.com/dv3qbj0bn/image/upload/v1741416419/lastminprep/qnzy9jiix6hyfrr4cddx.png";
 
 const UserSchema: Schema<UserI> = new Schema({
   fullName: {
@@ -20,8 +32,7 @@ const UserSchema: Schema<UserI> = new Schema({
   },
   avatar: {
     type: String,
-    default:
-      "https://res.cloudinary.com/dv3qbj0bn/image/upload/v1741416419/lastminprep/qnzy9jiix6hyfrr4cddx.png",
+    default: DEFAULT_USER_AVATAR,
   },
   email: {
     type: String,
@@ -40,12 +51,28 @@ const UserSchema: Schema<UserI> = new Schema({
     type: String,
     default: "",
   },
-  codeExpiry: {
-    type: Date,
-  },
+  codeExpiry: Date,
   profile: {
     type: Schema.Types.ObjectId,
     ref: "profile",
+  },
+  limits: {
+    daily: {
+      type: Number,
+      default: 5,
+    },
+    weekly: {
+      type: Number,
+      default: 30,
+    },
+    monthly: {
+      type: Number,
+      default: 100,
+    },
+  },
+  usage: {
+    generations: [Date],
+    submissions: [Date],
   },
   loginType: {
     type: String,

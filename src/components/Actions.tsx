@@ -5,11 +5,17 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-function Actions() {
+function Actions({ hero }: { hero?: boolean }) {
   const { status } = useSession();
 
   return (
-    <div className="flex flex-col gap-2 min-[400px]:flex-row w-full">
+    <div
+      className={`flex ${
+        hero
+          ? "sm:justify-start"
+          : "sm:justify-center"
+      } sm:items-center max-sm:flex-col gap-2 w-full`}
+    >
       {status === "authenticated" ? (
         <>
           <Button size="lg" asChild>

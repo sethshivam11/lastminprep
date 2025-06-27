@@ -146,20 +146,20 @@ const Page = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
-                    <div className="flex w-full items-center space-x-2 rounded-lg relative overflow-hidden border border-input pr-2 group">
+                    <div className="flex w-full items-center relative group">
                       <FormControl>
                         <Input
                           autoComplete="new-password"
                           type={showPwd ? "text" : "password"}
                           placeholder="Enter some password"
-                          className="w-full border-0 focus-visible:ring-0"
+                          className="pr-8"
                           {...field}
                         />
                       </FormControl>
                       <button
                         type="button"
                         onClick={() => setShowPwd((prev) => !prev)}
-                        className="text-muted group-focus-within:text-muted-foreground"
+                        className="text-muted group-focus-within:text-muted-foreground absolute right-0 p-2"
                       >
                         {showPwd ? <EyeOff size="20" /> : <Eye size="20" />}
                       </button>
@@ -174,20 +174,20 @@ const Page = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
-                    <div className="flex w-full items-center space-x-2 rounded-lg relative overflow-hidden border border-input pr-2 group">
+                    <div className="flex w-full items-center relative group">
                       <FormControl>
                         <Input
                           autoComplete="new-password webauthn"
                           type={showPwd ? "text" : "password"}
                           placeholder="Re-enter your password"
-                          className="w-full border-0 focus-visible:ring-0"
+                          className="pr-8"
                           {...field}
                         />
                       </FormControl>
                       <button
                         type="button"
                         onClick={() => setShowPwd((prev) => !prev)}
-                        className="text-muted group-focus-within:text-muted-foreground"
+                        className="text-muted group-focus-within:text-muted-foreground absolute right-0 p-2"
                       >
                         {showPwd ? <EyeOff size="20" /> : <Eye size="20" />}
                       </button>
