@@ -24,3 +24,13 @@ export const updateAvatar = async (file: File) => {
     return handleError(error);
   }
 };
+
+export const getUsage = async () => {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const { data } = await axios.get(`${baseUrl}/api/usage`);
+    return data;
+  } catch (error) {
+    return handleError(error);
+  }
+};

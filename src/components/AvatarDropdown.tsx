@@ -9,7 +9,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CircleUser, LogOut, Moon, Sun } from "lucide-react";
+import { CircleUser, LogOut, Moon, Sun, TrendingUp } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
@@ -46,6 +46,11 @@ function AvatarDropdown() {
         <DropdownMenuItem asChild>
           <Link href="/profile">
             <CircleUser /> Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/usage">
+            <TrendingUp /> Usage
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSub>

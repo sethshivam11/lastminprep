@@ -1,4 +1,4 @@
-import { Calendar, Clock, TrendingUp, LucideIcon } from "lucide-react";
+import { Calendar, Clock, LucideIcon, TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -7,7 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Limits } from "@/app/usage/page";
+import { Badge } from "./ui/badge";
 
 interface UsageCardProps {
   title: string;
@@ -18,36 +19,30 @@ interface UsageCardProps {
   color: "blue" | "purple" | "green";
 }
 
-function Usage() {
-  const usageData = {
-    daily: { used: 3, limit: 5 },
-    weekly: { used: 18, limit: 30 },
-    monthly: { used: 67, limit: 100 },
-  };
-
+function Usage({ usage, limits }: { usage: Limits; limits: Limits }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <UsageCard
         title="Daily Usage"
-        description="Questions generated today"
-        used={usageData.daily.used}
-        limit={usageData.daily.limit}
+        description="Interactions today"
+        used={usage.daily}
+        limit={limits.daily}
         icon={Clock}
         color="blue"
       />
       <UsageCard
         title="Weekly Usage"
-        description="Questions generated this week"
-        used={usageData.weekly.used}
-        limit={usageData.weekly.limit}
+        description="Interactions this week"
+        used={usage.weekly}
+        limit={limits.weekly}
         icon={Calendar}
         color="purple"
       />
       <UsageCard
         title="Monthly Usage"
-        description="Questions generated this month"
-        used={usageData.monthly.used}
-        limit={usageData.monthly.limit}
+        description="Interactions this month"
+        used={usage.monthly}
+        limit={limits.monthly}
         icon={TrendingUp}
         color="green"
       />
@@ -103,7 +98,7 @@ const UsageCard = ({
           <div>
             <div className="text-3xl font-bold">{used}</div>
             <div className="text-sm text-muted-foreground">
-              of {limit} questions
+              of {limit} responses
             </div>
           </div>
           <div className="text-right">

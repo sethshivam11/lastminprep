@@ -49,9 +49,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img
+              <Image
                 src="/logo.svg"
                 alt="LastMinPrep Logo"
+                width="40"
+                height="40"
                 className="w-10 h-10 rounded-lg"
               />
               <div>
@@ -128,7 +130,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <Separator className="bg-gray-200" />
+        <Separator className="bg-muted-foreground/30" />
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 text-sm text-muted-foreground/50">
           <p>© 2024 LastMinPrep. All rights reserved.</p>

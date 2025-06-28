@@ -87,25 +87,30 @@ export function parseTestData(
 
 export function handleRouteError(error: unknown) {
   console.log(error);
-  if (error instanceof mongoose.Error) {
+  let message = "Internal Server Error";
+  if (error instanceof z.ZodError) {
+    message = error.errors[0].message;
     return NextResponse.json(
       {
-        message: error.message || "Error while saving test data",
-        error: error.message,
-      },
-      { status: 500 }
-    );
-  } else if (error instanceof z.ZodError) {
-    return NextResponse.json(
-      {
-        message: error.errors[0].message || "Error while validating test data",
+        message,
+        data: null,
         error: error.errors,
       },
       { status: 400 }
     );
+  } else if (error instanceof mongoose.Error) {
+    message = error.message;
+    return NextResponse.json(
+      {
+        message,
+        data: null,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
   return NextResponse.json(
-    { success: false, message: "Error while validating test data" },
+    { success: false, data: null, message },
     { status: 500 }
   );
 }

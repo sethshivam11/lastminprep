@@ -8,15 +8,23 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const PlanInfo = () => {
+const PlanInfo = ({
+  limits,
+}: {
+  limits: {
+    daily: number;
+    weekly: number;
+    monthly: number;
+  };
+}) => {
   const features = [
-    "5 questions per day",
-    "30 questions per week",
-    "100 questions per month",
-    "Coding & multiple choice questions",
-    "Job description customization",
-    "Multiple difficulty levels",
-    "Language preferences",
+    `${limits.daily} responses per day`,
+    `${limits.weekly} responses per week`,
+    `${limits.monthly} responses per month`,
+    `Coding & Multiple Choice Questions`,
+    `Job description customization`,
+    `Multiple difficulty levels`,
+    `Language preferences`,
   ];
 
   return (

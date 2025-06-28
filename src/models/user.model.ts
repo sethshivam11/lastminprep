@@ -13,10 +13,7 @@ export interface UserI extends Document {
     weekly: number;
     monthly: number;
   };
-  usage: {
-    generations: Date[];
-    submissions: Date[];
-  };
+  usage: Date[];
   profile: ObjectId;
   loginType: "email" | "google" | "github";
   createdAt: Date;
@@ -41,7 +38,8 @@ const UserSchema: Schema<UserI> = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    default: "",
+    select: false,
   },
   isVerified: {
     type: Boolean,
@@ -59,21 +57,18 @@ const UserSchema: Schema<UserI> = new Schema({
   limits: {
     daily: {
       type: Number,
-      default: 5,
+      default: 10,
     },
     weekly: {
       type: Number,
-      default: 30,
+      default: 60,
     },
     monthly: {
       type: Number,
-      default: 100,
+      default: 200,
     },
   },
-  usage: {
-    generations: [Date],
-    submissions: [Date],
-  },
+  usage: [Date],
   loginType: {
     type: String,
     default: "email",

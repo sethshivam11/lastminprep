@@ -47,6 +47,7 @@ import { updateProfile } from "@/services/profile";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ProfileProps } from "@/app/profile/page";
+import { DatePicker } from "./DatePicker";
 
 function ProfileForm({ profile }: { profile: ProfileProps }) {
   const { data } = useSession();
@@ -96,6 +97,8 @@ function ProfileForm({ profile }: { profile: ProfileProps }) {
     setSubmitting(false);
   }
 
+  console.log(form.watch("birthday"));
+
   useEffect(() => {
     if (!data?.user.fullName) return;
     form.setValue("fullName", data.user.fullName);
@@ -107,20 +110,20 @@ function ProfileForm({ profile }: { profile: ProfileProps }) {
         <div className="flex max-md:flex-col items-center justify-center gap-4">
           <AvatarInput />
           <div className="space-y-8 w-full">
-            <div className="grid sm:grid-cols-3 gap-2">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-2 w-full">
               <FormField
                 control={form.control}
                 name="gender"
@@ -136,17 +139,20 @@ function ProfileForm({ profile }: { profile: ProfileProps }) {
                           <SelectValue placeholder="Select your gender" />
                         </SelectTrigger>
                         <SelectContent>
-                          {["male", "female", "others", "prefer not to say"].map(
-                            (item, index) => (
-                              <SelectItem
-                                key={index}
-                                value={item}
-                                className="capitalize"
-                              >
-                                {item}
-                              </SelectItem>
-                            )
-                          )}
+                          {[
+                            "male",
+                            "female",
+                            "others",
+                            "prefer not to say",
+                          ].map((item, index) => (
+                            <SelectItem
+                              key={index}
+                              value={item}
+                              className="capitalize"
+                            >
+                              {item}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -154,91 +160,21 @@ function ProfileForm({ profile }: { profile: ProfileProps }) {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="birthday"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Birthday</FormLabel>
+                    <FormControl>
+                      <DatePicker date={field.value} setDate={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <FormField
-              control={form.control}
-              name="birthday"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Birthday</FormLabel>
-                  <FormControl>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Select
-                        value={
-                          field.value ? field.value.getDate().toString() : ""
-                        }
-                        onValueChange={(value) => {
-                          const newDate = new Date(field.value);
-                          newDate.setDate(parseInt(value));
-                          field.onChange(newDate);
-                        }}
-                        name={field.name}
-                      >
-                        <SelectTrigger id="birthday" className="w-full">
-                          <SelectValue placeholder="DD" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 31 }, (_, i) => (
-                            <SelectItem key={i} value={(i + 1).toString()}>
-                              {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Select
-                        value={
-                          field.value ? field.value.getMonth().toString() : ""
-                        }
-                        onValueChange={(value) => {
-                          const newDate = new Date(field.value);
-                          newDate.setMonth(parseInt(value));
-                          field.onChange(newDate);
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="MM" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 12 }, (_, i) => (
-                            <SelectItem key={i} value={i.toString()}>
-                              {i + 1}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Select
-                        value={
-                          field.value
-                            ? field.value.getFullYear().toString()
-                            : ""
-                        }
-                        onValueChange={(value) => {
-                          const newDate = new Date(field.value);
-                          newDate.setFullYear(parseInt(value));
-                          field.onChange(newDate);
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="YYYY" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 100 }, (_, i) => (
-                            <SelectItem
-                              key={i}
-                              value={(new Date().getFullYear() - i).toString()}
-                              suppressHydrationWarning
-                            >
-                              {new Date().getFullYear() - i}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="location"

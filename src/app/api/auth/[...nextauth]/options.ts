@@ -3,7 +3,7 @@ import { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
-import UserModel from "@/models/user.model";
+import UserModel, { DEFAULT_USER_AVATAR } from "@/models/user.model";
 import bcrypt from "bcrypt";
 
 declare module "next-auth" {
@@ -130,19 +130,30 @@ export const authOptions: NextAuthOptions = {
           return true;
         } else return false;
       }
-
       if (!profile?.email) return false;
 
       try {
         await dbConnect();
         let existingUser = await UserModel.findOne({ email: profile.email });
+        let avatar = DEFAULT_USER_AVATAR;
+
+        if (account?.provider === "google") {
+          avatar =
+            "picture" in profile
+              ? (profile.picture as string)
+              : DEFAULT_USER_AVATAR;
+        } else if (account?.provider === "github") {
+          avatar =
+            "avatar_url" in profile
+              ? (profile.avatar_url as string)
+              : DEFAULT_USER_AVATAR;
+        }
 
         if (!existingUser) {
           existingUser = await UserModel.create({
             email: profile.email,
             fullName: profile.name,
-            password: account?.provider,
-            avatar: "picture" in profile ? profile.picture : profile.image,
+            avatar,
             isVerified: true,
             loginType: account?.provider,
           });
@@ -150,9 +161,16 @@ export const authOptions: NextAuthOptions = {
 
         if (existingUser && existingUser.loginType === account?.provider)
           return true;
-        else return false;
+        else if (existingUser.loginType !== account?.provider) {
+          throw new Error("INVALID_LOGIN_TYPE");
+        } else return false;
       } catch (error) {
         console.log(error);
+        if (error instanceof Error && error.message === "INVALID_LOGIN_TYPE") {
+          throw new Error(
+            "You have already registered with a different method."
+          );
+        }
         return false;
       }
     },
