@@ -27,7 +27,7 @@ export const getTest = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}`);
     return data;
   } catch (error) {
@@ -45,7 +45,7 @@ export const getQuestions = async (testId: string) => {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.post(
       `${baseUrl}/api/test/${testId}/questions`
     );
@@ -86,7 +86,7 @@ export const getTestAnalytics = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}/analytics`);
     return data;
   } catch (error) {
@@ -103,7 +103,7 @@ export const getAttempts = async (testId: string) => {
     };
   }
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(`${baseUrl}/api/test/${testId}/attempts`);
     return data;
   } catch (error) {

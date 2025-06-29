@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const removeAvatar = async () => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.delete(`${baseUrl}/api/avatar`);
     return data;
   } catch (error) {
@@ -17,7 +17,7 @@ export const updateAvatar = async (file: File) => {
   try {
     const formData = new FormData();
     formData.append("avatar", file);
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.post(`${baseUrl}/api/avatar`, formData);
     return data;
   } catch (error) {
@@ -27,7 +27,7 @@ export const updateAvatar = async (file: File) => {
 
 export const getUsage = async () => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(`${baseUrl}/api/usage`);
     return data;
   } catch (error) {
@@ -41,7 +41,7 @@ export const submitFeedback = async (data: {
   notes?: string;
 }) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const response = await axios.post(`${baseUrl}/api/feedback`, data);
     return response.data;
   } catch (error) {

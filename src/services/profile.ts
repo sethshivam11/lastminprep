@@ -14,7 +14,7 @@ export const updateProfile = async (body: {
   linkedin?: string;
 }) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.post(`${baseUrl}/api/profile/save`, body);
     return data;
   } catch (error) {
@@ -24,7 +24,7 @@ export const updateProfile = async (body: {
 
 export const getProfile = async (profileId: string) => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(`${baseUrl}/api/profile/${profileId}`);
     return data;
   } catch (error) {
@@ -34,7 +34,7 @@ export const getProfile = async (profileId: string) => {
 
 export const getUserProfile = async () => {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(`${baseUrl}/api/profile/user`);
     return data;
   } catch (error) {
@@ -52,7 +52,7 @@ export const getProfileActivity = async (profileId: string) => {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(
       `${baseUrl}/api/profile/${profileId}/activity`
     );
@@ -72,7 +72,7 @@ export const getProfileAnalytics = async (profileId: string) => {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(
       `${baseUrl}/api/profile/${profileId}/analytics`
     );
@@ -92,7 +92,7 @@ export const getProfilePerformance = async (profileId: string) => {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(
       `${baseUrl}/api/profile/${profileId}/performance`
     );
@@ -112,7 +112,7 @@ export const getProfileSessions = async (profileId: string) => {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "";
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
     const { data } = await axios.get(
       `${baseUrl}/api/profile/${profileId}/sessions`
     );

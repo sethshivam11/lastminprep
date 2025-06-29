@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       data;
 
     const test = await TestModel.create({
-      name: `${language} Test`,
+      name: `${language[0].toUpperCase() + language.slice(1)} Test`,
       user: user._id,
       difficulty,
       language,

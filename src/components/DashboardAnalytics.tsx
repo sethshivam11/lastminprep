@@ -36,8 +36,23 @@ function DashboardAnalytics() {
     async function fetchData() {
       const response = await testsAnalytics();
       if (response.success) {
-        console.log(response.data);
-        setData(response.data);
+        let difficulties: Difficulties[] = [];
+        let attempts: Attempts = {
+          correct: 0,
+          incorrect: 0,
+          accuracy: 0,
+        };
+        if (response.data.difficulties) {
+          difficulties = response.data.difficulties;
+        }
+        if (response.data.attempts) {
+          attempts = {
+            correct: response.data.attempts.correct,
+            incorrect: response.data.attempts.incorrect,
+            accuracy: response.data.attempts.accuracy,
+          };
+        }
+        setData({ difficulties, attempts });
       }
       setLoading(false);
     }
