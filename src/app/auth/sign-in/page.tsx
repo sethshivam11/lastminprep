@@ -53,6 +53,7 @@ const Page = () => {
       email: data.email,
       password: data.password,
       redirect: false,
+      callbackUrl: "/dashboard",
     });
 
     if (result?.error) {
@@ -72,7 +73,7 @@ const Page = () => {
     }
 
     if (result?.url) {
-      router.replace("/dashboard");
+      router.replace(result.url);
     }
 
     setIsSubmitting(false);
