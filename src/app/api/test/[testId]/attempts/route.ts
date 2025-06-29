@@ -13,7 +13,6 @@ export async function GET(
   const user = session?.user;
 
   if (!session || !user) {
-    console.log(session);
     return NextResponse.json(
       {
         success: false,

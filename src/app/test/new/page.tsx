@@ -63,9 +63,21 @@ function Page() {
     const response = await createTest(values);
     if (response.success) {
       router.push(`/test/${response.data._id}/appearing`);
-      return;
+    } else {
+      const action = response.message.includes("exceeded")
+        ? {
+            label: "Check Usage",
+            onClick: () => router.push("/usage"),
+          }
+        : undefined;
+      const description =
+        response.data?.description || "Please try again later.";
+      toast.error(response.message, {
+        description,
+        action,
+      });
+      setLoading(false);
     }
-    toast.error(response.message);
   }
 
   return (

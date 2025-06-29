@@ -85,6 +85,28 @@ export function parseTestData(
   };
 }
 
+export function countUsage(
+  generations: Date[],
+  range: "daily" | "weekly" | "monthly"
+): number {
+  const now = new Date();
+  let start: number;
+
+  if (range === "daily") {
+    start = new Date(now.setHours(0, 0, 0, 0)).getTime();
+  } else if (range === "weekly") {
+    const firstDayOfWeek = new Date();
+    firstDayOfWeek.setDate(now.getDate() - now.getDay());
+    start = new Date(firstDayOfWeek.setHours(0, 0, 0, 0)).getTime();
+  } else if (range === "monthly") {
+    start = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  } else {
+    throw new Error(`Invalid range: ${range}`);
+  }
+
+  return generations.filter((date) => date.getTime() >= start).length;
+}
+
 export function handleRouteError(error: unknown) {
   console.log(error);
   let message = "Internal Server Error";
@@ -118,12 +140,14 @@ export function handleRouteError(error: unknown) {
 export function handleError(error: unknown) {
   console.log(error);
   let message = "Something went wrong";
+  let data = null;
   if (error instanceof AxiosError) {
     message = error.response?.data.message;
+    data = error.response?.data.data || null;
   }
   return {
     success: false,
-    data: null,
+    data,
     message,
   };
 }

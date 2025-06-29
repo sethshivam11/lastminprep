@@ -2,7 +2,7 @@ import dbConnect from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/options";
-import { UserI } from "@/models/user.model";
+import UserModel, { UserI } from "@/models/user.model";
 import TestModel from "@/models/test.model";
 import {
   codingCountSchema,
@@ -13,7 +13,7 @@ import {
   mcqCountSchema,
 } from "@/schemas/testSchema";
 import { z } from "zod";
-import { handleRouteError } from "@/lib/helpers";
+import { countUsage, handleRouteError } from "@/lib/helpers";
 
 const testSchema = z.object({
   difficulty: difficultySchema,
@@ -27,17 +27,60 @@ const testSchema = z.object({
 export async function POST(req: NextRequest) {
   await dbConnect();
 
-  try {
-    const session = await getServerSession(authOptions);
-    const user: UserI = session?.user as UserI;
+  const session = await getServerSession(authOptions);
+  const user: UserI = session?.user as UserI;
 
-    if (!session || !session?.user) {
-      return Response.json(
+  if (!session || !session?.user) {
+    return Response.json(
+      {
+        success: false,
+        message: "Not Authenticated",
+      },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const existingUser = await UserModel.findById(user._id, "limits usage");
+    if (!existingUser) {
+      return NextResponse.json(
         {
           success: false,
-          message: "Not Authenticated",
+          message: "User not found",
         },
-        { status: 401 }
+        { status: 404 }
+      );
+    }
+
+    const { usage, limits } = existingUser;
+    const exempted = {
+      daily: limits.daily - countUsage(usage, "daily"),
+      weekly: limits.weekly - countUsage(usage, "weekly"),
+      monthly: limits.monthly - countUsage(usage, "monthly"),
+    };
+
+    if (exempted.daily <= 0 || exempted.weekly <= 0 || exempted.monthly <= 0) {
+      const target =
+        exempted.daily <= 0
+          ? "Daily"
+          : exempted.weekly <= 0
+          ? "Weekly"
+          : "Monthly";
+      const message = `${target} limit exceeded`;
+      const description = `You’ve reached your ${target} AI usage limit. Your limit will reset ${
+        target === "Daily"
+          ? "tomorrow"
+          : target === "Weekly"
+          ? "next week"
+          : "next month"
+      } at 12:00 AM UTC.`;
+      return NextResponse.json(
+        {
+          success: false,
+          data: { exempted, description },
+          message,
+        },
+        { status: 403 }
       );
     }
 
@@ -68,6 +111,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    await existingUser.updateOne({
+      $push: { usage: new Date() },
+    });
 
     return NextResponse.json(
       {

@@ -6,6 +6,7 @@ import Usage from "@/components/Usage";
 import PlanInfo from "@/components/PlanInfo";
 import { useEffect, useState } from "react";
 import { getUsage } from "@/services/user";
+import FeedbackForm from "@/components/FeedbackForm";
 
 export interface Limits {
   daily: number;
@@ -37,7 +38,6 @@ function Page() {
       const response = await getUsage();
       if (response.success) {
         setData(response.data);
-        console.log(response.data);
       } else {
         setErrorMessage(response.message || "Failed to fetch usage data");
       }
@@ -71,37 +71,40 @@ function Page() {
         <PlanInfo limits={data.limits} />
         <Usage limits={data.limits} usage={data.usage} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Lightbulb className="text-blue-500" />
-              Usage Tips
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-              <p>
-                Generate tests efficiently by being specific with your job
-                descriptions and requirements.
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-              <p>
-                Mix coding and multiple choice questions to maximize your
-                interview preparation.
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-              <p>
-                Usage limits reset daily, weekly, and monthly to help you pace
-                your preparation.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-2 gap-6 mb-8">
+          <FeedbackForm />
+          <Card className="xl:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Lightbulb className="text-cyan-500" />
+                Usage Tips
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                <p>
+                  Generate tests efficiently by being specific with your job
+                  descriptions and requirements.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                <p>
+                  Mix coding and multiple choice questions to maximize your
+                  interview preparation.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                <p>
+                  Usage limits reset daily, weekly, and monthly to help you pace
+                  your preparation.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

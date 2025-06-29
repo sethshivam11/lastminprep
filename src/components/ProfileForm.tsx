@@ -97,8 +97,6 @@ function ProfileForm({ profile }: { profile: ProfileProps }) {
     setSubmitting(false);
   }
 
-  console.log(form.watch("birthday"));
-
   useEffect(() => {
     if (!data?.user.fullName) return;
     form.setValue("fullName", data.user.fullName);

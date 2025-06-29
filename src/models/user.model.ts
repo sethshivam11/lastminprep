@@ -39,7 +39,6 @@ const UserSchema: Schema<UserI> = new Schema({
   password: {
     type: String,
     default: "",
-    select: false,
   },
   isVerified: {
     type: Boolean,

@@ -2,30 +2,8 @@ import dbConnect from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 import { NextResponse } from "next/server";
-import { handleRouteError } from "@/lib/helpers";
+import { countUsage, handleRouteError } from "@/lib/helpers";
 import UserModel from "@/models/user.model";
-
-function countGenerationsInRange(
-  generations: Date[],
-  range: "daily" | "weekly" | "monthly"
-): number {
-  const now = new Date();
-  let start: number;
-
-  if (range === "daily") {
-    start = new Date(now.setHours(0, 0, 0, 0)).getTime();
-  } else if (range === "weekly") {
-    const firstDayOfWeek = new Date();
-    firstDayOfWeek.setDate(now.getDate() - now.getDay());
-    start = new Date(firstDayOfWeek.setHours(0, 0, 0, 0)).getTime();
-  } else if (range === "monthly") {
-    start = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-  } else {
-    throw new Error(`Invalid range: ${range}`);
-  }
-
-  return generations.filter((date) => date.getTime() >= start).length;
-}
 
 export async function GET() {
   await dbConnect();
@@ -50,9 +28,9 @@ export async function GET() {
     }
 
     const usage = {
-      daily: countGenerationsInRange(existingUser.usage, "daily"),
-      weekly: countGenerationsInRange(existingUser.usage, "weekly"),
-      monthly: countGenerationsInRange(existingUser.usage, "monthly"),
+      daily: countUsage(existingUser.usage, "daily"),
+      weekly: countUsage(existingUser.usage, "weekly"),
+      monthly: countUsage(existingUser.usage, "monthly"),
     };
 
     return NextResponse.json(

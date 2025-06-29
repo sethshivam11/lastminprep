@@ -1,9 +1,14 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import dbConnect from "@/lib/db";
-import { CodingAnswer, handleRouteError, MCQAnswer } from "@/lib/helpers";
+import {
+  CodingAnswer,
+  countUsage,
+  handleRouteError,
+  MCQAnswer,
+} from "@/lib/helpers";
 import AttemptModel from "@/models/attempt.model";
 import TestModel from "@/models/test.model";
-import { UserI } from "@/models/user.model";
+import UserModel, { UserI } from "@/models/user.model";
 import { createMistral } from "@ai-sdk/mistral";
 import { generateObject } from "ai";
 import { getServerSession } from "next-auth";
@@ -46,6 +51,49 @@ export async function POST(
         {
           status: 400,
         }
+      );
+    }
+
+    const existingUser = await UserModel.findById(user._id);
+    if (!existingUser) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "User not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    const { usage, limits } = existingUser;
+    const exempted = {
+      daily: limits.daily - countUsage(usage, "daily"),
+      weekly: limits.weekly - countUsage(usage, "weekly"),
+      monthly: limits.monthly - countUsage(usage, "monthly"),
+    };
+
+    if (exempted.daily <= 0 || exempted.weekly <= 0 || exempted.monthly <= 0) {
+      const target =
+        exempted.daily <= 0
+          ? "Daily"
+          : exempted.weekly <= 0
+          ? "Weekly"
+          : "Monthly";
+      const message = `${target} limit exceeded`;
+      const description = `You’ve reached your ${target} AI usage limit. Your limit will reset ${
+        target === "Daily"
+          ? "tomorrow"
+          : target === "Weekly"
+          ? "next week"
+          : "next month"
+      }.`;
+      return NextResponse.json(
+        {
+          success: false,
+          data: { exempted, description },
+          message,
+        },
+        { status: 403 }
       );
     }
 
@@ -136,6 +184,10 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    await existingUser.updateOne({
+      $push: { usage: new Date() },
+    });
 
     const mcqScore = mcqs.reduce((score: number, curr: MCQAnswer) => {
       return score + (curr.correct ? 1 : 0);

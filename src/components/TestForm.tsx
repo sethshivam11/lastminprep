@@ -110,6 +110,19 @@ function TestForm({
     if (response?.success) {
       toast.success("Test submitted successfully!");
       router.push(`/attempt/${response.data._id}`);
+    } else {
+      const action = response.message.includes("exceeded")
+        ? {
+            label: "Check Usage",
+            onClick: () => router.push("/usage"),
+          }
+        : undefined;
+      const description =
+        response.data?.description || "Please try again later.";
+      toast.error(response.message, {
+        description,
+        action,
+      });
     }
   };
 

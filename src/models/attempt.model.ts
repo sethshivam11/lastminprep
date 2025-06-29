@@ -50,14 +50,14 @@ const AttemptSchema: Schema<AttemptI> = new Schema({
       mcqs: [
         {
           question: { type: String, required: true },
-          answer: { type: String, required: true },
+          answer: String,
           correct: { type: Boolean, default: false },
         },
       ],
       coding: [
         {
           question: { type: String, required: true },
-          answer: { type: String, required: true },
+          answer: String,
           marks: { type: Number, default: 0, min: 0, max: 10 },
           feedback: { type: String, default: "" },
         },

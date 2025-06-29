@@ -52,7 +52,7 @@ function Page() {
       setGenerating(false);
     };
     if (test.questions.mcqs.length > 0 || generating)
-      return console.log(generating, test.questions.mcqs.length);
+      return;
     fetchQuestions();
   }, []);
 
