@@ -23,7 +23,7 @@ function ProfileCard({
   profile: ProfileI & { user: { fullName: string; avatar: string } };
 }) {
   return (
-    <Card className="flex flex-col items-center p-4 border-input rounded-lg sm:top-16 sm:sticky h-fit">
+    <Card className="flex flex-col items-center p-4 border-input rounded-lg sm:top-16 md:sticky h-fit">
       <CardHeader className="w-full">
         <Image
           src={profile.user.avatar}

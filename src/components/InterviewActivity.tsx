@@ -15,7 +15,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-import { attemptsAnalytics } from "@/services/attempt";
+import { attemptsActivity } from "@/services/attempt";
 import { ChartColumnDecreasing, Loader2 } from "lucide-react";
 import { getProfileActivity } from "@/services/profile";
 
@@ -56,7 +56,7 @@ export function InterviewActivity({
       if (profileId) {
         return fetchProfileActivity();
       }
-      const response = await attemptsAnalytics();
+      const response = await attemptsActivity();
       if (response.success) {
         setData(response.data);
       }

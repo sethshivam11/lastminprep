@@ -11,9 +11,9 @@ export const getAttempt = async (attemptId: string) => {
   }
 };
 
-export const attemptsAnalytics = async () => {
+export const attemptsActivity = async () => {
   try {
-    const { data } = await axios.get("/api/attempts/analytics");
+    const { data } = await axios.get("/api/attempts/activity");
     return data;
   } catch (error) {
     return handleError(error);

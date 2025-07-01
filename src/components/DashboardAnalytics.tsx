@@ -34,6 +34,7 @@ function DashboardAnalytics() {
 
   useEffect(() => {
     async function fetchData() {
+      console.log("Inside fetchData");
       const response = await testsAnalytics();
       if (response.success) {
         let difficulties: Difficulties[] = [];
@@ -54,11 +55,12 @@ function DashboardAnalytics() {
         }
         setData({ difficulties, attempts });
       }
+      console.log("Loading stopped")
       setLoading(false);
     }
-    if (data.difficulties.length > 0) return setLoading(false);
+    if (data?.difficulties.length > 0) return;
     fetchData();
-  }, [data]);
+  }, []);
 
   return (
     <div className="grid sm:grid-cols-2 gap-4 col-span-2">

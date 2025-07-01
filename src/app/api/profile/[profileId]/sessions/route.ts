@@ -31,68 +31,101 @@ export async function GET(
     }
 
     const sessions = await TestModel.aggregate([
-      {
-        $match: {
-          user: profile.user,
-        },
-      },
-      {
-        $sort: {
-          createdAt: -1,
-        },
-      },
-      {
-        $limit: 5,
-      },
-      {
-        $lookup: {
-          from: "attempts",
-          let: { testId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$test", "$$testId"],
-                },
-              },
-            },
-            {
-              $sort: {
-                createdAt: -1,
-              },
-            },
-            {
-              $limit: 1,
-            },
-            {
-              $project: {
-                totalScore: 1,
-              },
-            },
-          ],
-          as: "latestAttempt",
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          title: "$name",
-          createdAt: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$createdAt",
-            },
-          },
-          score: {
-            $cond: {
-              if: { $gt: [{ $size: "$latestAttempt" }, 0] },
-              then: { $arrayElemAt: ["$latestAttempt.totalScore", 0] },
-              else: "N/A",
+  {
+    $match: {
+      user: profile.user,
+    },
+  },
+  {
+    $sort: {
+      createdAt: -1,
+    },
+  },
+  {
+    $limit: 5,
+  },
+  {
+    $lookup: {
+      from: "attempts",
+      let: { testId: "$_id" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $eq: ["$test", "$$testId"],
             },
           },
         },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+        {
+          $limit: 1,
+        },
+        {
+          $project: {
+            totalScore: 1,
+          },
+        },
+      ],
+      as: "latestAttempt",
+    },
+  },
+  {
+    $addFields: {
+      obtainedScore: {
+        $cond: [
+          { $gt: [{ $size: "$latestAttempt" }, 0] },
+          { $arrayElemAt: ["$latestAttempt.totalScore", 0] },
+          null,
+        ],
       },
-    ]);
+      totalPossible: {
+        $add: [
+          "$mcqCount",
+          { $multiply: ["$codingCount", 10] }, // adjust coding weight if needed
+        ],
+      },
+    },
+  },
+  {
+    $addFields: {
+      percentageScore: {
+        $cond: [
+          { $and: [{ $ne: ["$obtainedScore", null] }, { $gt: ["$totalPossible", 0] }] },
+          {
+            $round: [
+              {
+                $multiply: [
+                  { $divide: ["$obtainedScore", "$totalPossible"] },
+                  100,
+                ],
+              },
+              2,
+            ],
+          },
+          "N/A",
+        ],
+      },
+    },
+  },
+  {
+    $project: {
+      _id: 0,
+      title: "$name",
+      createdAt: {
+        $dateToString: {
+          format: "%Y-%m-%d",
+          date: "$createdAt",
+        },
+      },
+      score: "$percentageScore",
+    },
+  },
+]
+);
 
     if (!sessions || sessions.length === 0) {
       return NextResponse.json(

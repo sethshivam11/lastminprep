@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import mongoose from "mongoose";
 import TestModel from "@/models/test.model";
+import AttemptModel from "@/models/attempt.model";
 
 export async function GET() {
   await dbConnect();
@@ -26,137 +27,127 @@ export async function GET() {
   try {
     const userId = new mongoose.Types.ObjectId(user._id);
 
-    const analytics = await TestModel.aggregate([
+    const difficulties = await TestModel.aggregate([
       { $match: { user: userId } },
       {
-        $facet: {
-          difficulties: [
-            {
-              $group: {
-                _id: "$difficulty",
-                count: { $sum: 1 },
-              },
-            },
-            {
-              $project: {
-                _id: 0,
-                difficulty: "$_id",
-                count: 1,
-              },
-            },
-          ],
+        $group: {
+          _id: "$difficulty",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          difficulty: "$_id",
+          count: 1,
+        },
+      },
+    ]);
 
-          attempts: [
-            {
-              $lookup: {
-                from: "attempts",
-                localField: "_id",
-                foreignField: "test",
-                as: "attempts",
+    const attempts = await AttemptModel.aggregate([
+      { $match: { user: userId } },
+      {
+        $project: {
+          mcqCorrect: {
+            $size: {
+              $filter: {
+                input: "$answers.mcqs",
+                as: "q",
+                cond: { $eq: ["$$q.correct", true] },
               },
             },
-            { $unwind: "$attempts" },
-            { $match: { "attempts.user": userId } },
-            {
-              $group: {
-                _id: null,
-                correct: {
-                  $sum: {
-                    $add: [
-                      {
-                        $size: {
-                          $filter: {
-                            input: "$attempts.answers.mcqs",
-                            as: "q",
-                            cond: { $eq: ["$$q.correct", true] },
-                          },
-                        },
-                      },
-                      {
-                        $sum: "$attempts.answers.coding.marks",
-                      },
-                    ],
-                  },
-                },
-                incorrect: {
-                  $sum: {
-                    $add: [
-                      {
-                        $size: {
-                          $filter: {
-                            input: "$attempts.answers.mcqs",
-                            as: "q",
-                            cond: { $eq: ["$$q.correct", false] },
-                          },
-                        },
-                      },
-                      {
-                        $size: {
-                          $filter: {
-                            input: "$attempts.answers.coding",
-                            as: "c",
-                            cond: { $eq: ["$$c.marks", 0] },
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
+          },
+          mcqIncorrect: {
+            $size: {
+              $filter: {
+                input: "$answers.mcqs",
+                as: "q",
+                cond: { $eq: ["$$q.correct", false] },
               },
             },
-            {
-              $project: {
-                _id: 0,
-                correct: 1,
-                incorrect: 1,
-                accuracy: {
-                  $cond: [
-                    { $gt: [{ $add: ["$correct", "$incorrect"] }, 0] },
-                    {
-                      $round: [
-                        {
-                          $multiply: [
-                            {
-                              $divide: [
-                                "$correct",
-                                { $add: ["$correct", "$incorrect"] },
-                              ],
-                            },
-                            100,
-                          ],
-                        },
-                        2,
-                      ],
-                    },
-                    0,
-                  ],
-                },
+          },
+          codingCorrectMarks: {
+            $sum: {
+              $map: {
+                input: "$answers.coding",
+                as: "c",
+                in: "$$c.marks",
               },
             },
-            {
-              $replaceWith: {
-                $mergeObjects: ["$$ROOT"],
+          },
+          codingQuestions: {
+            $size: "$answers.coding",
+          },
+          codingIncorrect: {
+            $size: {
+              $filter: {
+                input: "$answers.coding",
+                as: "c",
+                cond: { $eq: ["$$c.marks", 0] },
               },
             },
-          ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          correctMcq: { $sum: "$mcqCorrect" },
+          incorrectMcq: { $sum: "$mcqIncorrect" },
+          correctCodingMarks: { $sum: "$codingCorrectMarks" },
+          codingQuestions: { $sum: "$codingQuestions" },
+          incorrectCoding: { $sum: "$codingIncorrect" },
         },
       },
       {
         $addFields: {
-          attempts: {
-            $arrayElemAt: ["$attempts", 0],
+          totalQuestions: {
+            $add: ["$correctMcq", "$incorrectMcq", "$codingQuestions"],
+          },
+          correct: {
+            $add: ["$correctMcq", { $divide: ["$correctCodingMarks", 10] }],
+          },
+          incorrect: { $add: ["$incorrectMcq", "$incorrectCoding"] },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          correct: 1,
+          incorrect: 1,
+          totalQuestions: 1,
+          accuracy: {
+            $cond: [
+              { $gt: ["$totalQuestions", 0] },
+              {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ["$correct", "$totalQuestions"] },
+                      100,
+                    ],
+                  },
+                  0,
+                ],
+              },
+              0,
+            ],
           },
         },
       },
     ]);
 
-    if (
-      !analytics ||
-      !analytics[0] ||
-      analytics.length === 0 ||
-      !analytics[0]?.difficulties ||
-      analytics[0].difficulties.length === 0
-    ) {
+    const analytics = {
+      difficulties,
+      attempts: attempts[0] || {
+        correct: 0,
+        incorrect: 0,
+        totalQuestions: 0,
+        accuracy: 0,
+      },
+    };
+
+    if (!difficulties.length) {
       return NextResponse.json(
         {
           success: false,
@@ -170,7 +161,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: true,
-        data: analytics[0],
+        data: analytics,
         message: "Analytics found successfully",
       },
       { status: 200 }
