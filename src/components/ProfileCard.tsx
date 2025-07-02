@@ -20,7 +20,10 @@ import XIcon from "@/components/icons/X";
 function ProfileCard({
   profile,
 }: {
-  profile: ProfileI & { user: { fullName: string; avatar: string } };
+  profile: ProfileI & {
+    _id: string;
+    user: { fullName: string; avatar: string };
+  };
 }) {
   return (
     <Card className="flex flex-col items-center p-4 border-input rounded-lg sm:top-16 md:sticky h-fit">
@@ -28,9 +31,9 @@ function ProfileCard({
         <Image
           src={profile.user.avatar}
           alt={profile.user.fullName + "'s image"}
-          width="200"
-          height="200"
-          className="w-full select-none rounded-full"
+          width="240"
+          height="240"
+          className="w-full sm:max-w-60 max-w-40 select-none rounded-full mx-auto"
           draggable={false}
         />
         <CardTitle className="xl:text-4xl sm:text-3xl text-2xl tracking-tight font-bold">
@@ -117,7 +120,7 @@ function ProfileCard({
               </Link>
             ))}
           </div>
-          <EditProfile />
+          <EditProfile profileId={profile._id} />
         </div>
       </CardFooter>
     </Card>

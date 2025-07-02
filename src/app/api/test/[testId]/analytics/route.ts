@@ -52,6 +52,7 @@ export async function GET(
               },
             },
           ],
+
           stats: [
             {
               $project: {
@@ -64,16 +65,27 @@ export async function GET(
                     },
                   },
                 },
+
                 mcqTotal: { $size: "$answers.mcqs" },
-                codingObtained: { $sum: "$answers.coding.marks" },
-                codingTotal: { $multiply: [{ $size: "$answers.coding" }, 10] }, // 10 marks per coding question
+
+                codingCorrect: {
+                  $size: {
+                    $filter: {
+                      input: "$answers.coding",
+                      as: "coding",
+                      cond: { $gte: ["$$coding.marks", 5] },
+                    },
+                  },
+                },
+
+                codingTotal: { $size: "$answers.coding" },
               },
             },
             {
               $group: {
                 _id: null,
                 correct: {
-                  $sum: { $add: ["$mcqCorrect", "$codingObtained"] },
+                  $sum: { $add: ["$mcqCorrect", "$codingCorrect"] },
                 },
                 total: {
                   $sum: { $add: ["$mcqTotal", "$codingTotal"] },

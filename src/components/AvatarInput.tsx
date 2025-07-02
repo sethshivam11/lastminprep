@@ -46,7 +46,7 @@ function AvatarInput() {
 
   return (
     <>
-      <Menubar className="w-fit h-fit bg-transparent border-transparent xl:justify-start justify-center">
+      <Menubar className="w-fit h-fit rounded-full p-0 bg-transparent border-transparent xl:justify-start justify-center">
         <MenubarMenu>
           <MenubarTrigger className="bg-tranparent w-fit p-0 hover:bg-transparent bg-transparent rounded-full">
             <Avatar className="w-40 h-40">

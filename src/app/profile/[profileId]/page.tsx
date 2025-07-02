@@ -12,7 +12,10 @@ async function Page({ params }: { params: Promise<{ profileId: string }> }) {
   const { profileId } = await params;
   const profile: {
     success: boolean;
-    data: ProfileI & { user: { fullName: string; avatar: string } };
+    data: ProfileI & {
+      _id: string;
+      user: { fullName: string; avatar: string };
+    };
   } = await getProfile(profileId);
 
   if (!profile?.success) {

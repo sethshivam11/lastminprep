@@ -4,7 +4,7 @@ import AttemptModel from "@/models/attempt.model";
 import ProfileModel from "@/models/profile.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(  
+export async function GET(
   _: NextRequest,
   { params }: { params: Promise<{ profileId: string }> }
 ) {
@@ -39,19 +39,41 @@ export async function GET(
       },
       {
         $addFields: {
-          totalQuestionsPerAttempt: {
-            $add: [{ $size: "$answers.mcqs" }, { $size: "$answers.coding" }],
+          totalMcqs: { $size: "$answers.mcqs" },
+          totalCoding: { $size: "$answers.coding" },
+        },
+      },
+      {
+        $addFields: {
+          possibleScore: {
+            $add: ["$totalMcqs", { $multiply: ["$totalCoding", 10] }],
           },
           isCompleted: {
-            $gt: [
+            $gt: [{ $add: ["$totalMcqs", "$totalCoding"] }, 0],
+          },
+        },
+      },
+      {
+        $addFields: {
+          percentageScore: {
+            $cond: [
+              { $gt: ["$possibleScore", 0] },
               {
-                $add: [
-                  { $size: "$answers.mcqs" },
-                  { $size: "$answers.coding" },
+                $min: [
+                  {
+                    $multiply: [
+                      { $divide: ["$totalScore", "$possibleScore"] },
+                      100,
+                    ],
+                  },
+                  100,
                 ],
               },
               0,
             ],
+          },
+          totalQuestionsPerAttempt: {
+            $add: ["$totalMcqs", "$totalCoding"],
           },
         },
       },
@@ -59,7 +81,7 @@ export async function GET(
         $group: {
           _id: null,
           totalInterviews: { $sum: 1 },
-          averageScore: { $avg: "$totalScore" },
+          averageScore: { $avg: "$percentageScore" },
           totalQuestions: { $sum: "$totalQuestionsPerAttempt" },
           completedCount: {
             $sum: { $cond: ["$isCompleted", 1, 0] },
@@ -70,7 +92,7 @@ export async function GET(
         $project: {
           _id: 0,
           totalInterviews: 1,
-          averageScore: { $round: ["$averageScore", 2] },
+          averageScore: { $round: ["$averageScore", 0] },
           totalQuestions: 1,
           completionRate: {
             $round: [
@@ -80,12 +102,13 @@ export async function GET(
                   100,
                 ],
               },
-              2,
+              0,
             ],
           },
         },
       },
     ]);
+
     if (!analytics || analytics.length === 0) {
       return NextResponse.json(
         { success: false, data: null, message: "No analytics found" },
