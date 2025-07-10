@@ -8,6 +8,7 @@ import { getQuestions } from "@/services/tests";
 import { Loader2, TriangleAlert } from "lucide-react";
 import TestForm from "@/components/TestForm";
 import GeneratingAnimation from "@/components/GeneratingAnimation";
+import { Button } from "@/components/ui/button";
 
 function Page() {
   const query = useSearchParams();
@@ -19,6 +20,7 @@ function Page() {
     mcqs: 0,
     coding: 0,
   });
+  const [retryCount, setRetryCount] = useState(0);
   const [test, setTest] = useState({
     name: "",
     user: "",
@@ -34,6 +36,29 @@ function Page() {
     extraDescription: "",
   });
 
+  const fetchQuestions = async (retry: boolean = false) => {
+    if (!generating) setGenerating(true);
+    if (retry) setRetryCount((prev) => prev + 1);
+
+    const questionsPresent = query.get("questionsPresent");
+    if (questionsPresent !== "1") {
+      setLoading(false);
+      setGenerating(true);
+    }
+
+    const response = await getQuestions(testId);
+    if (response?.success) {
+      setTest(response.data);
+    } else {
+      setErrorMessage(
+        response?.message ||
+          `Failed to ${questionsPresent ? "fetch" : "generate"} test questions.`
+      );
+    }
+    setLoading(false);
+    setGenerating(false);
+  };
+
   useEffect(() => {
     const mcqs = Number(query.get("mcqs")) || 0;
     const coding = Number(query.get("coding")) || 0;
@@ -42,26 +67,6 @@ function Page() {
       coding,
     });
 
-    const fetchQuestions = async () => {
-      const questionsPresent = query.get("questionsPresent");
-      if (questionsPresent !== "1") {
-        setLoading(false);
-        setGenerating(true);
-      }
-      const response = await getQuestions(testId);
-      if (response?.success) {
-        setTest(response.data);
-      } else {
-        setErrorMessage(
-          response?.message ||
-            `Failed to ${
-              questionsPresent ? "fetch" : "generate"
-            } test questions.`
-        );
-      }
-      setLoading(false);
-      setGenerating(false);
-    };
     if (test.questions.mcqs.length > 0 || generating) return;
     fetchQuestions();
   }, []);
@@ -116,6 +121,9 @@ function Page() {
             Some Error Occured
           </h3>
           <p className="text-muted-foreground">{errorMessage}</p>
+          {retryCount < 3 && (
+            <Button onClick={() => fetchQuestions(true)}>Retry</Button>
+          )}
         </div>
       ) : (
         generating && (
