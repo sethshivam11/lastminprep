@@ -18,7 +18,9 @@ function TestDetails({ test }: { test: TestI }) {
         <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
           {test.name}
         </h1>
-        <Link href={`/test/${test._id}/appearing?questionsPresent=1`}>
+        <Link
+          href={`/test/${test._id}/appearing?questionsPresent=1&mcqs=${test.mcqCount}&coding=${test.codingCount}`}
+        >
           <Button size="lg" className="flex items-center gap-2">
             <PlayCircle className="h-20 w-20" />
             Start Test

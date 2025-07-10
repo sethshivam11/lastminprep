@@ -107,7 +107,6 @@ export default function GeneratingAnimation({
             </p>
           </div>
 
-          {/* Progress Bar */}
           <div className="mb-8">
             <div className="flex justify-between text-sm text-muted-foreground mb-2">
               <span>Progress</span>
@@ -121,7 +120,6 @@ export default function GeneratingAnimation({
             </div>
           </div>
 
-          {/* Steps */}
           <div className="space-y-4">
             {steps.map((step, index) => (
               <div

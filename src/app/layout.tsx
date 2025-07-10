@@ -12,6 +12,8 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://lastminprep.vercel.app";
+
 export const metadata: Metadata = {
   title: "Last Min Prep",
   description:
@@ -22,14 +24,13 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    title: "Sociial",
-    url: "https://sociial.devshivam.tech",
+    title: "Last Min Prep",
+    url: baseUrl,
     description:
-      "Sociial is a vibrant community where you can connect, share, and grow. Join us and start your social journey today!",
-    siteName: "Shivam",
+      "Generate AI-powered questions on the go. Customize your interview prep with job descriptions, language preferences, difficulty levels, and a mix of coding and multiple choice questions.",
     images: [
       {
-        url: `https://sociial.devshivam.tech/opengraph-image.jpg`,
+        url: `${baseUrl}/opengraph-image.jpg`,
         type: "image/jpg",
         width: 1200,
         height: 630,
@@ -38,14 +39,14 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sociial",
+    title: "Last Min Prep",
     description:
-      "Sociial is a vibrant community where you can connect, share, and grow. Join us and start your social journey today!",
+      "Generate AI-powered questions on the go. Customize your interview prep with job descriptions, language preferences, difficulty levels, and a mix of coding and multiple choice questions.",
     creator: "@sethshivam11",
     siteId: "765045797750706176",
     images: [
       {
-        url: `https://sociial.devshivam.tech/opengraph-image.jpg`,
+        url: `${baseUrl}/opengraph-image.jpg`,
         type: "image/jpg",
         width: 1200,
         height: 630,

@@ -15,6 +15,10 @@ function Page() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [questionsCount, setQuestionsCount] = useState({
+    mcqs: 0,
+    coding: 0,
+  });
   const [test, setTest] = useState({
     name: "",
     user: "",
@@ -31,6 +35,13 @@ function Page() {
   });
 
   useEffect(() => {
+    const mcqs = Number(query.get("mcqs")) || 0;
+    const coding = Number(query.get("coding")) || 0;
+    setQuestionsCount({
+      mcqs,
+      coding,
+    });
+
     const fetchQuestions = async () => {
       const questionsPresent = query.get("questionsPresent");
       if (questionsPresent !== "1") {
@@ -51,8 +62,7 @@ function Page() {
       setLoading(false);
       setGenerating(false);
     };
-    if (test.questions.mcqs.length > 0 || generating)
-      return;
+    if (test.questions.mcqs.length > 0 || generating) return;
     fetchQuestions();
   }, []);
 
@@ -112,9 +122,9 @@ function Page() {
           <GeneratingAnimation
             language={test.language}
             difficulty={test.difficulty}
-            mcqCount={test.mcqCount}
-            codingCount={test.codingCount}
             completed={!generating}
+            mcqCount={questionsCount.mcqs}
+            codingCount={questionsCount.coding}
           />
         )
       )}

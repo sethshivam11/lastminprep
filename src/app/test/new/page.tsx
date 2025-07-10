@@ -62,7 +62,9 @@ function Page() {
     setLoading(true);
     const response = await createTest(values);
     if (response.success) {
-      router.push(`/test/${response.data._id}/appearing`);
+      router.push(
+        `/test/${response.data._id}/appearing?mcqs=${values.mcqCount}&coding=${values.codingCount}`
+      );
     } else {
       const action = response.message.includes("exceeded")
         ? {
