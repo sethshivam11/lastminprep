@@ -57,7 +57,7 @@ function TimerDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="max-sm:hidden">
           {timer ? formatTime(timer) : <AlarmClock />}
         </Button>
       </DialogTrigger>
