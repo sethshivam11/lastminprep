@@ -121,9 +121,12 @@ function Page() {
             Some Error Occured
           </h3>
           <p className="text-muted-foreground">{errorMessage}</p>
-          {retryCount < 3 && (
-            <Button onClick={() => fetchQuestions(true)}>Retry</Button>
-          )}
+          {retryCount < 3 &&
+            errorMessage !== "You are not authorized to access this test" && (
+              <Button className="mt-4" onClick={() => fetchQuestions(true)}>
+                Retry
+              </Button>
+            )}
         </div>
       ) : (
         generating && (

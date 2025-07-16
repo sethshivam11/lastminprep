@@ -130,11 +130,14 @@ function TestForm({
     <>
       {mcqs.length > 0 && (
         <>
-          <div className="flex items-center gap-2 pt-6">
-            <HelpCircle className="h-6 w-6 text-green-600" />
-            <h2 className="text-2xl font-semibold">
-              Multiple Choice Questions
-            </h2>
+          <div className="flex justify-between items-center gap-2 pt-6">
+            <div className="flex justify-center items-center gap-2">
+              <HelpCircle className="h-6 w-6 text-green-600" />
+              <h2 className="text-2xl font-semibold max-sm:hidden">
+                Multiple Choice Questions
+              </h2>
+              <h2 className="text-2xl font-semibold sm:hidden">MCQs</h2>
+            </div>
             <Badge variant="secondary">{mcqs.length} questions</Badge>
           </div>
           {mcqs.map((mcq, index) => (
@@ -152,9 +155,11 @@ function TestForm({
 
       {coding.length > 0 && (
         <>
-          <div className="flex items-center gap-2 pt-6">
-            <Code className="h-6 w-6 text-purple-600" />
-            <h2 className="text-2xl font-semibold">Coding Questions</h2>
+          <div className="flex justify-between items-center gap-2 pt-6">
+            <div className="flex justify-center items-center gap-2">
+              <Code className="h-6 w-6 text-purple-600" />
+              <h2 className="text-2xl font-semibold">Coding Questions</h2>
+            </div>
             <Badge variant="secondary">{coding.length} questions</Badge>
           </div>
           {coding.map((coding, index) => (

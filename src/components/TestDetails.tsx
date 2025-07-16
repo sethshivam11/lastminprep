@@ -15,39 +15,41 @@ function TestDetails({ test }: { test: TestI }) {
   return (
     <div className="space-y-4">
       <div className="flex max-sm:flex-col justify-between gap-2 sm:pb-10 py-4">
-        <h1 className="sm:text-5xl text-3xl tracking-tight font-bold">
+        <h1 className="lg:text-5xl sm:text-3xl text-xl tracking-tight font-bold">
           {test.name}
         </h1>
         <Link
           href={`/test/${test._id}/appearing?questionsPresent=1&mcqs=${test.mcqCount}&coding=${test.codingCount}`}
         >
-          <Button size="lg" className="flex items-center gap-2">
+          <Button size="lg" className="flex items-center gap-2 max-sm:hidden">
             <PlayCircle className="h-20 w-20" />
             Start Test
           </Button>
         </Link>
       </div>
       <div className="grid lg:grid-cols-4 grid-cols-2 gap-4">
-        <div className="ring-1 ring-input rounded-lg flex items-center gap-5 py-4 px-6 shadow-sm">
-          <div className="text-orange-400">
-            <Code className="h-8 w-8" />
+        <div className="grid sm:grid-cols-2 col-span-2 gap-4">
+          <div className="ring-1 ring-input rounded-lg flex items-center gap-5 py-4 px-6 shadow-sm">
+            <div className="text-orange-400">
+              <Code className="h-8 w-8" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-muted-foreground">Language</h3>{" "}
+              <p className="capitalize sm:text-2xl text-xl font-semibold">
+                {test.language}
+              </p>
+            </div>
           </div>
-          <div className="space-y-1">
-            <h3 className="text-muted-foreground">Language</h3>{" "}
-            <p className="capitalize sm:text-2xl text-xl font-semibold">
-              {test.language}
-            </p>
-          </div>
-        </div>
-        <div className="ring-1 ring-input rounded-lg flex items-center gap-5 py-4 px-6 shadow-sm">
-          <div className="text-blue-600">
-            <Brain className="h-8 w-8" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-muted-foreground">Difficulty</h3>{" "}
-            <p className="capitalize sm:text-2xl text-xl font-semibold">
-              {test.difficulty}
-            </p>
+          <div className="ring-1 ring-input rounded-lg flex items-center gap-5 py-4 px-6 shadow-sm">
+            <div className="text-blue-600">
+              <Brain className="h-8 w-8" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-muted-foreground">Difficulty</h3>{" "}
+              <p className="capitalize sm:text-2xl text-xl font-semibold">
+                {test.difficulty}
+              </p>
+            </div>
           </div>
         </div>
         <div className="ring-1 ring-input rounded-lg flex items-center gap-5 py-4 px-6 shadow-sm">
@@ -75,7 +77,7 @@ function TestDetails({ test }: { test: TestI }) {
       </div>
       <Button className="w-full sm:hidden" asChild>
         <Link
-          href={`/test/${test.id}/appearing`}
+          href={`/test/${test._id}/appearing?questionsPresent=1&mcqs=${test.mcqCount}&coding=${test.codingCount}`}
           className="flex items-center gap-2"
         >
           <PlayCircle className="h-20 w-20" />

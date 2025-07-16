@@ -12,7 +12,8 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://lastminprep.vercel.app";
+const baseUrl =
+  process.env.NEXT_PUBLIC_LINK || "https://lastminprep.vercel.app";
 
 export const metadata: Metadata = {
   title: "Last Min Prep",

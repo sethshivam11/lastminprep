@@ -27,7 +27,7 @@ function McqCard({ mcq, language, index, value, handleChange }: Props) {
         <CardTitle className="text-lg">
           Q{index + 1}: {mcq.question}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="overflow-x-auto">
           {language && mcq.code && (
             <CodeBlock language={language} code={mcq.code?.trim()} />
           )}

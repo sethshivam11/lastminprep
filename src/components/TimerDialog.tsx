@@ -14,6 +14,7 @@ import { Button } from "./ui/button";
 
 function TimerDialog() {
   const [timer, setTimer] = useState(0);
+  const [stopped, setStopped] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const formatTime = (seconds: number) => {
@@ -35,15 +36,19 @@ function TimerDialog() {
     }, 1000);
   };
 
-  const stopTimer = () => {
-    clearInterval(timerRef.current);
-    setTimer(0);
+  const toggleTimer = () => {
+    if (stopped) {
+      startTimer();
+      setStopped(false);
+    } else {
+      clearInterval(timerRef.current);
+      setStopped(true);
+    }
   };
 
   const resetTimer = () => {
     clearInterval(timerRef.current);
     setTimer(0);
-    startTimer();
   };
 
   useEffect(() => {
@@ -68,7 +73,9 @@ function TimerDialog() {
         <DialogFooter className="grid grid-cols-1 gap-2 sm:space-x-0">
           {timer ? (
             <DialogClose asChild>
-              <Button onClick={stopTimer}>Stop</Button>
+              <Button onClick={toggleTimer}>
+                {stopped ? "Resume" : "Stop"}
+              </Button>
             </DialogClose>
           ) : (
             <DialogClose asChild>
@@ -76,11 +83,9 @@ function TimerDialog() {
             </DialogClose>
           )}
           {timer ? (
-            <DialogClose asChild>
-              <Button onClick={resetTimer} variant="outline">
-                Reset
-              </Button>
-            </DialogClose>
+            <Button onClick={resetTimer} variant="outline">
+              Reset
+            </Button>
           ) : (
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
