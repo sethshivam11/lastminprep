@@ -85,6 +85,8 @@ export async function POST(
           - Do not include any code or starter code for coding questions.
     7. Do not inline the code in a single line — maintain multiline formatting for readability.
     8. Escape any double quotes inside code properly using \\"
+    9. Each MCQ's "options" array must contain exactly 4 unique, non-repeating, and clearly distinct choices.
+    10. If two options could be interpreted as similar (e.g., "int" and "integer"), change one to make it clearly different.
 
     ${
       test.jobDescription
