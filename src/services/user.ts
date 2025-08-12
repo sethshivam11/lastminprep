@@ -48,3 +48,13 @@ export const submitFeedback = async (data: {
     return handleError(error);
   }
 };
+
+export const generateToken = async () => {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
+    const response = await axios.get(`${baseUrl}/api/generate-token`);
+    return response.data;
+  } catch (error) {
+    return handleError(error);
+  }
+};

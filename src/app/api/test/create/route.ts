@@ -104,6 +104,7 @@ export async function POST(req: NextRequest) {
       },
       codingCount,
     });
+
     if (!test) {
       return NextResponse.json(
         {
@@ -113,10 +114,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    await existingUser.updateOne({
-      $push: { usage: new Date() },
-    });
 
     return NextResponse.json(
       {

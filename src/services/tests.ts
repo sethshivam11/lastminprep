@@ -35,7 +35,11 @@ export const getTest = async (testId: string) => {
   }
 };
 
-export const getQuestions = async (testId: string) => {
+export const getQuestions = async (
+  testId: string,
+  questionsPresent: boolean = false,
+  token: string | null = null
+) => {
   if (!testId) {
     return {
       success: false,
@@ -45,9 +49,17 @@ export const getQuestions = async (testId: string) => {
   }
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_LINK || "";
+    const heavyAPI = process.env.NEXT_PUBLIC_HEAVY_API;
+    const baseUrl =
+      heavyAPI && !questionsPresent ? heavyAPI : process.env.NEXT_PUBLIC_LINK;
     const { data } = await axios.post(
-      `${baseUrl}/api/test/${testId}/questions`
+      `${baseUrl}/api/test/${testId}/questions`,
+      {},
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
     );
     return data;
   } catch (error) {

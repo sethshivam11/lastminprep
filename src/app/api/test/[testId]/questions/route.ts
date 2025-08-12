@@ -4,7 +4,7 @@ import { generateObject } from "ai";
 import dbConnect from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { UserI } from "@/models/user.model";
+import UserModel, { UserI } from "@/models/user.model";
 import TestModel from "@/models/test.model";
 import { handleRouteError } from "@/lib/helpers";
 import { z } from "zod";
@@ -159,6 +159,14 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    await UserModel.findByIdAndUpdate(
+      user._id,
+      {
+        $push: { usage: new Date() },
+      },
+      { new: true }
+    );
 
     await test.updateOne({
       questions: {

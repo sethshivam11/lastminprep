@@ -34,7 +34,6 @@ function DashboardAnalytics() {
 
   useEffect(() => {
     async function fetchData() {
-      console.log("Inside fetchData");
       const response = await testsAnalytics();
       if (response.success) {
         let difficulties: Difficulties[] = [];
@@ -55,7 +54,6 @@ function DashboardAnalytics() {
         }
         setData({ difficulties, attempts });
       }
-      console.log("Loading stopped")
       setLoading(false);
     }
     if (data?.difficulties.length > 0) return;

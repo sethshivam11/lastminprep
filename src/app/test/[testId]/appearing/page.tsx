@@ -9,6 +9,7 @@ import { Loader2, TriangleAlert } from "lucide-react";
 import TestForm from "@/components/TestForm";
 import GeneratingAnimation from "@/components/GeneratingAnimation";
 import { Button } from "@/components/ui/button";
+import { generateToken } from "@/services/user";
 
 function Page() {
   const query = useSearchParams();
@@ -45,8 +46,20 @@ function Page() {
       setLoading(false);
       setGenerating(true);
     }
+    const token = await generateToken();
 
-    const response = await getQuestions(testId);
+    if (!token || !token?.data) {
+      setErrorMessage("You are not authorized to access this test");
+      setLoading(false);
+      setGenerating(false);
+      return;
+    }
+
+    const response = await getQuestions(
+      testId,
+      questionsPresent === "1",
+      token.data
+    );
     if (response?.success) {
       setTest(response.data);
     } else {
