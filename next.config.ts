@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         hostname: "cdn.buymeacoffee.com",
         pathname: "/buttons/v2/default-yellow.png",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+        pathname: "/**",
+      },
     ],
   },
 };

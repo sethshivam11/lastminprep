@@ -1,14 +1,36 @@
 import React from "react";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 function FAQs() {
+  const faqs = [
+    {
+      question: "What is LastMinPrep?",
+      answer:
+        "LastMinPrep is an AI-powered platform that helps you quickly prepare for coding interviews by generating personalized question sets based on your language, difficulty level, and job requirements.",
+    },
+    {
+      question: "How does it work?",
+      answer:
+        "LastMinPrep works by taking your inputs—such as programming language, difficulty level, number of questions, and job description—and instantly generating tailored MCQs or coding challenges, then providing immediate feedback to help you improve.",
+    },
+    {
+      question: "How does it help me improve?",
+      answer:
+        "LastMinPrep helps you improve by providing instant, detailed feedback on your answers, highlighting mistakes, explaining correct solutions, and offering targeted practice to strengthen your weak areas.",
+    },
+    {
+      question: "Why use LastMinPrep instead of regular prep platforms?",
+      answer:
+        "LastMinPrep saves you time by generating customized, job-relevant questions instantly, focuses only on what you need to practice, and gives immediate, actionable feedback, unlike regular platforms that follow a one-size-fits-all approach.",
+    },
+  ];
   return (
-    <section id="faq" className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
+    <section id="faq" className="w-full py-12 md:py-24 lg:py-32">
       <div className="px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
@@ -22,41 +44,12 @@ function FAQs() {
         </div>
         <div className="mx-auto max-w-3xl mt-8">
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>What is LastMinPrep?</AccordionTrigger>
-              <AccordionContent>
-                LastMinPrep is a focused preparation platform designed to help
-                you revise key concepts and practice important topics right
-                before your tech interviews — fast, smart, and effectively.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>How does it work?</AccordionTrigger>
-              <AccordionContent>
-                We give you targeted problem sets, timed quizzes, and
-                performance insights so you can focus on the areas that matter
-                most in the shortest time possible. It&apos;s like a crash course
-                tailored to your weak points.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>How does it help me improve?</AccordionTrigger>
-              <AccordionContent>
-                Our system tracks your performance across attempts, pinpoints
-                weak areas, and compares your progress with industry benchmarks
-                — so you can prep smarter, not harder.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-4">
-              <AccordionTrigger>
-                Why use LastMinPrep instead of regular prep platforms?
-              </AccordionTrigger>
-              <AccordionContent>
-                Traditional platforms are great for long-term learning. But
-                LastMinPrep is built for revision-mode — when you need quick
-                feedback, smart targeting, and results under pressure.
-              </AccordionContent>
-            </AccordionItem>
+            {faqs.map(({ question, answer }, index) => (
+              <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionTrigger>{question}</AccordionTrigger>
+                <AccordionContent>{answer}</AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </div>
       </div>

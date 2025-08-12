@@ -24,30 +24,24 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { usePathname } from "next/navigation";
+import Header from "./Header";
 
 function Navbar() {
   const { status } = useSession();
   const location = usePathname();
 
-  return (
-    <div
-      className={
-        location === "/"
-          ? "hidden"
-          : "z-50 sticky top-0 w-full bg-white/50 dark:bg-black/50 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800"
-      }
-    >
+  return location !== "/" ? (
+    <div className="z-50 sticky top-0 w-full bg-white/50 dark:bg-black/50 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800">
       <div className="flex justify-between items-center sm:px-10 px-2 py-2 max-w-7xl mx-auto">
         <Drawer>
-          <DrawerTrigger className={`sm:hidden ${
-                location.includes("/appearing") ? "hidden" : ""
-              }
-              ${status !== "authenticated" ? "hidden" : ""}`} asChild>
-            <Button
-              variant="outline"
-              size="icon"
-             
-            >
+          <DrawerTrigger
+            className={`sm:hidden ${
+              location.includes("/appearing") ? "hidden" : ""
+            }
+              ${status !== "authenticated" ? "hidden" : ""}`}
+            asChild
+          >
+            <Button variant="outline" size="icon">
               <Menu />
             </Button>
           </DrawerTrigger>
@@ -153,6 +147,8 @@ function Navbar() {
         </div>
       </div>
     </div>
+  ) : (
+    <Header />
   );
 }
 

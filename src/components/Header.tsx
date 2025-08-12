@@ -21,7 +21,7 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center justify-between max-sm:px-2">
+      <div className="flex h-14 items-center justify-between px-4 max-sm:px-2 max-w-7xl mx-auto">
         <Link
           className="flex items-center justify-center gap-2 mr-4"
           href={status === "authenticated" ? "/dashboard" : "/"}
@@ -32,7 +32,6 @@ function Header() {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
           <Link
             className="transition-colors hover:text-foreground/80"
@@ -54,12 +53,6 @@ function Header() {
           </Link>
           <Link
             className="transition-colors hover:text-foreground/80"
-            href="#analytics"
-          >
-            Analytics
-          </Link>
-          <Link
-            className="transition-colors hover:text-foreground/80"
             href="#faq"
           >
             FAQ
@@ -69,7 +62,6 @@ function Header() {
         <div className="flex items-center justify-end space-x-4">
           {status !== "authenticated" ? <ModeToggle /> : <AvatarDropdown />}
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent hover:text-accent-foreground"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -84,7 +76,6 @@ function Header() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden border-t">
           <div className="p-4 grid gap-3">

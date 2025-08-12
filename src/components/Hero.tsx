@@ -10,14 +10,18 @@ function Hero() {
           <div className="flex flex-col justify-center space-y-4 w-full">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Ace Your Coding Interviews with AI-Powered Practice
+                Ace Your Coding Interviews with&nbsp;
+                <br className="max-sm:hidden" />
+                <span className="bg-gradient-to-t bg-clip-text text-transparent from-[#06B6D4] to-[#3B82F6] dark:from-[#2DD4BF] dark:to-[#06B6D4]">
+                  AI-Powered Practice
+                </span>
               </h1>
               <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
                 Prepare for technical interviews with AI-generated coding
                 questions and get instant feedback on your solutions.{" "}
               </p>
             </div>
-            <Actions hero/>
+            <Actions hero />
           </div>
           <div className="flex items-center justify-center">
             <div className="w-full rounded-lg overflow-hidden bg-muted p-3 font-mono text-sm">
