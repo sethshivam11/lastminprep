@@ -105,62 +105,62 @@ git remote -v # confirm the changes
 
 ## 📸 Screenshots
 
-  <ol style="list-style: none;">
-    <li>
+  <div>
+    <div>
       <a href="https://lastminprep.vercel.app">
         <img src="./public/screenshots/home.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/auth/options">
         <img src="./public/screenshots/options.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/auth/sign-in">
         <img src="./public/screenshots/sign-in.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/auth/sign-up">
         <img src="./public/screenshots/sign-up.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/dashboard">
         <img src="./public/screenshots/dashboard.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/test/new">
         <img src="./public/screenshots/start-test.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <img src="./public/screenshots/appearing.png">
-    </li>
-    <li>
+    </div>
+    <div>
       <img src="./public/screenshots/attempt.png">
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/profile">
         <img src="./public/screenshots/profile-edit.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <img src="./public/screenshots/profile.png">
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/usage">
         <img src="./public/screenshots/usage.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <a href="https://lastminprep.vercel.app/tests">
         <img src="./public/screenshots/tests.png">
       </a>
-    </li>
-    <li>
+    </div>
+    <div>
       <img src="./public/screenshots/test.png">
-    </li>
-  </ol>
+    </div>
+  </div>

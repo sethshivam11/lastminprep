@@ -31,8 +31,8 @@ export const metadata: Metadata = {
       "Generate AI-powered questions on the go. Customize your interview prep with job descriptions, language preferences, difficulty levels, and a mix of coding and multiple choice questions.",
     images: [
       {
-        url: `${baseUrl}/opengraph-image.jpg`,
-        type: "image/jpg",
+        url: `${baseUrl}/opengraph-image.png`,
+        type: "image/png",
         width: 1200,
         height: 630,
       },
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
     siteId: "765045797750706176",
     images: [
       {
-        url: `${baseUrl}/opengraph-image.jpg`,
-        type: "image/jpg",
+        url: `${baseUrl}/opengraph-image.png`,
+        type: "image/png",
         width: 1200,
         height: 630,
       },
