@@ -16,7 +16,7 @@ function Working() {
       icon: Cpu,
       iconClasses: "text-emerald-500",
       iconBackground:
-        "bg-emerald-100 dark:bg-emerald-950 dark:border-emerald-900 group-hover:border-emerald-500 dark:group-hover:border-emerald-500",
+        "bg-emerald-100 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-900 group-hover:border-emerald-500 dark:group-hover:border-emerald-500",
       title: "Get AI-Generated Questions",
       description:
         "Our AI instantly creates tailored interview questions based on your inputs, simulating real interview conditions.",
