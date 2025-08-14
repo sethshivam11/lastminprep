@@ -133,7 +133,7 @@ const Footer = () => {
         <Separator className="bg-muted-foreground/30" />
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 text-sm text-muted-foreground/50">
-          <p>© 2024 LastMinPrep. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} LastMinPrep. All rights reserved.</p>
           <div className="flex items-center justify-center gap-1">
             Made with
             <Heart className="text-red-500" size="16" />
