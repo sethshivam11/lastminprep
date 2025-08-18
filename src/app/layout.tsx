@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -64,6 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
+        <Analytics />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Providers>
             <Toaster richColors />
