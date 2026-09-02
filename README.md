@@ -73,8 +73,8 @@ Of course! Here’s an updated **Connect with Me** section you can use at the en
 Got questions, feedback, or just want to chat about LastMinPrep? Feel free to reach out — I’d love to hear from you!
 
 - 📧 **Email**: [legendshivam11@gmail.com](mailto:legendshivam11@gmail.com)
-- 💼 **LinkedIn**: [linkedin.com/in/sethshivam11](https://linkedin.com/in/sethshivam11)
-- 🐦 **Twitter/X**: [x.com/sethshivam11](https://x.com/sethshivam11)
+- 💼 **LinkedIn**: [linkedin.com/in/shivam-iyk](https://linkedin.com/in/shivam-iyk)
+- 🐦 **Twitter/X**: [x.com/shivam_iyk](https://x.com/shivam_iyk)
 
 ---
 
@@ -83,7 +83,7 @@ Got questions, feedback, or just want to chat about LastMinPrep? Feel free to re
 1. Clone the repo
 
 ```bash
-git clone https://github.com/sethshivam11/lastminprep
+git clone https://github.com/shivam-iyk/lastminprep
 ```
 
 2. Install the required NPM packages
@@ -92,7 +92,7 @@ git clone https://github.com/sethshivam11/lastminprep
 npm install
 ```
 
-3. Enter your environment variables in `.env.local`. Refer [.env.sample](https://github.com/sethshivam11/lastminprep/blob/main/.env.sample) for required variables.
+3. Enter your environment variables in `.env.local`. Refer [.env.sample](https://github.com/shivam-iyk/lastminprep/blob/main/.env.sample) for required variables.
 
 4. Change git remote url to avoid accidental pushes to base project
 

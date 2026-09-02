@@ -25,20 +25,20 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: "GitHub", href: "https://github.com/sethshivam11", icon: Github },
+    { name: "GitHub", href: process.env.NEXT_PUBLIC_GITHUB_PROFILE || "https://github.com/shivam-iyk", icon: Github },
     {
       name: "LinkedIn",
-      href: "https://linkedin.com/in/sethshivam11",
+      href: process.env.NEXT_PUBLIC_LINKEDIN_PROFILE || "https://linkedin.com/in/shivam-iyk",
       icon: Linkedin,
     },
     {
       name: "X",
-      href: "https://x.com/sethshivam11",
+      href: process.env.NEXT_PUBLIC_X_PROFILE || "https://x.com/shivam_iyk",
       icon: XIcon,
     },
     {
       name: "Mail",
-      href: "mailto:legendshivam11@gmail.com",
+      href: process.env.NEXT_PUBLIC_MAIL || "mailto:legendshivam11@gmail.com",
       icon: Mail,
     },
   ];
